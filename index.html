@@ -844,7 +844,7 @@ html.joining #toast{position:fixed;bottom:1.5rem}
 <noscript>VocaBoard needs JavaScript turned on.</noscript>
 <script>window.VB_MODE = 'app';</script>
 <!-- Optional: paste your Google Apps Script Web App URL between the quotes so every teacher using this link can run QR activities without setting anything up. -->
-<script>window.VB_LIVE_URL = '';</script>
+<script>window.VB_LIVE_URL = 'https://script.google.com/macros/s/AKfycbyI7L6OEnJTLLKDpvioiIfXrVzsvhMgJERRqnRjDA7NBHSyLfNfi6XgMbsh1LHLeOthOw/exec';</script>
 <script>
 (function(){'use strict';
 /* ---------- Icons (original drawings) ---------- */
@@ -4015,7 +4015,7 @@ async function liveCall(params, url) {
 function joinLink(code) {
   const url = liveUrl(), m = url.match(/script\.google\.com\/macros\/s\/([\w-]+)\/exec/);
   const base = location.origin + location.pathname.replace(/index\.html$/, '');
-  return `${base}?join=${code}` + (url && !window.VB_LIVE_URL ? (m ? `&g=${m[1]}` : `&u=${encodeURIComponent(url)}`) : '');
+  return `${base}?join=${code}` + (url && url !== window.VB_LIVE_URL ? (m ? `&g=${m[1]}` : `&u=${encodeURIComponent(url)}`) : '');
 }
 const LIVE_ERR = {
   no_url: 'Add your Google connection first: Menu, then Students join with a QR code.',
