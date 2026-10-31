@@ -1,0 +1,91 @@
+VOCABOARD - HOW TO INSTALL
+===========================
+Developed by: Ms. Amina Qatan
+
+VocaBoard is an installable web app (PWA). You put this folder online once,
+then install it from that web address on every device: smart board,
+laptop, tablet and phone. After the first visit it also works offline.
+
+STEP 1 - Put the folder online (free, about 5 minutes, using GitHub Pages)
+---------------------------------------------------------------------------
+1. Sign in at github.com and create a new repository, for example "vocaboard".
+   Set it to Public.
+2. Click "uploading an existing file" and drag in EVERYTHING inside this
+   folder: index.html, manifest.webmanifest, sw.js, the "icons" folder and the "avatars" folder.
+   Click "Commit changes".
+3. Open Settings > Pages. Under "Build and deployment" choose
+   Source: Deploy from a branch, Branch: main, folder: / (root). Save.
+4. After a minute your app is live at:
+   https://YOUR-GITHUB-NAME.github.io/vocaboard/
+
+Any other host that serves files over HTTPS also works (Netlify,
+Cloudflare Pages, your school website). Opening index.html straight from
+a USB stick runs the board, but it cannot be installed that way.
+
+STEP 2 - Install it on each device
+-----------------------------------
+Open your web address on the device, then:
+
+- Smart board (Android-based, e.g. Promethean, SMART, Newline, BenQ),
+  Android tablet or phone: open the Chrome menu (three dots) and tap
+  "Install app" or "Add to Home screen".
+- Windows smart board or laptop: in Chrome or Edge, click the install
+  icon at the right end of the address bar (or Menu > Apps > Install).
+- Mac: Chrome or Edge as above. In Safari: File > Add to Dock.
+- iPad or iPhone: open the address in Safari, tap Share, then
+  "Add to Home Screen".
+- Chromebook: Chrome menu > Install VocaBoard.
+
+You can also tap the VocaBoard button (top left) > Install.
+
+GOOD TO KNOW
+------------
+- Boards, class lists and settings are saved on each device. To move them
+  to another device, use Menu > Back up > Export boards, then Import on
+  the other device.
+- On a big touch screen, set Menu > Size of buttons and text to Large.
+- The microphone (Sound level) and camera (Webcam) ask for permission the
+  first time you use them.
+- To update the app later, upload the new files to the same place. Devices
+  pick up the new version the next time the app opens with internet.
+- Voice typing and voice drawing (the microphone buttons in Text, Draw,
+  Sticky note and Idea wall) use the browser's speech service. They work
+  in Chrome, Edge and Safari and need an internet connection.
+- Reading handwriting in the Draw tool only appears on devices whose
+  browser supports it (for example Chromebooks).
+- Attendance (Smart Tech Attendance): tap "Upload list" to add a class from
+  an Excel or CSV file. Your old files level_2_group_d.csv and
+  public_speaking_eim.csv (in your Smart Tech Attendance backup, data folder)
+  work as they are. To copy check-ins to Google Sheets, open the pencil
+  button > Google Sheets connection and paste the same Web App address you
+  used before. If VocaBoard is on the same GitHub account as your old app,
+  that address is picked up automatically on that device.
+- Upload the "avatars" folder too. It holds the student characters.
+
+STUDENTS JOIN WITH A QR CODE (Poll and Idea wall)
+-------------------------------------------------
+Students can vote in a Poll or post on the Idea wall from their own phones
+or tablets. They scan the QR code on the board; no app or account needed.
+Each activity gets its own code, so teachers using the same board link in
+different classrooms at the same time never see each other's answers.
+
+This uses your Google Apps Script (the same one as Smart Tech Attendance).
+Update it once:
+1. Open your Google Sheet > Extensions > Apps Script.
+2. Replace everything in Code.gs with the new Code.gs from the
+   "google-apps-script" folder in this zip. Save.
+3. Deploy > Manage deployments > pencil (Edit) > Version: New version >
+   Deploy. The Web App address stays the same.
+   (Execute as: Me. Who has access: Anyone.)
+4. In VocaBoard: Menu > Students join with a QR code > paste the Web App
+   address > Test the connection > Save. On a device where attendance is
+   already connected, this address is already filled in.
+
+In class: open a Poll or Idea wall and tap "Students join". Tap the QR
+code to show it full screen. Tap "Stop" when you finish. Answers also go
+to a "Live" tab in your Google Sheet.
+
+Optional, for other teachers: open index.html in a text editor, find
+window.VB_LIVE_URL = '' and paste your Web App address between the quotes.
+Then every teacher using your link can run QR activities without any set
+up (their students' answers pass through your Google Sheet's "Live" tab).
