@@ -3452,8 +3452,10 @@ T.wall = {
     const lv = liveSetup(c, 'wall', () => ({ title: (s._title || 'Idea wall').replace(/\s*\(example\)$/i, ''), q: s.q, qid: '' }), items => {
       const fresh = [];
       for (const it of items) {
-        if (!it.t || s.posts.some(p => p.id === it.id)) continue;
-        const p = { id: it.id, t: String(it.t).slice(0, 300), c: WALL_COLS.includes(it.c) ? it.c : WALL_COLS[s.posts.length % WALL_COLS.length], likes: 0, n: it.n ? String(it.n).slice(0, 40) : '', live: true };
+        let x = {}; if (typeof it.qid === 'string' && it.qid[0] === '{') try { x = JSON.parse(it.qid) || {}; } catch (e) {}
+        const t = it.t || x.t, nm = it.n || x.n;
+        if (!t || s.posts.some(p => p.id === it.id)) continue;
+        const p = { id: it.id, t: String(t).slice(0, 300), c: [it.c, x.c, it.qid].find(v => WALL_COLS.includes(v)) || WALL_COLS[s.posts.length % WALL_COLS.length], likes: 0, n: nm ? String(nm).slice(0, 40) : '', live: true };
         s.posts.unshift(p); fresh.push(p);
       }
       if (!fresh.length) return;
@@ -4001,6 +4003,7 @@ T.attend = {
 /* ---------- Live activities: students join a Poll or Idea wall from their phones with a QR code ---------- */
 /* Server: the teacher's Google Apps Script (the updated Smart Tech Attendance Code.gs).
    Every activity gets its own random 6-letter code plus a private owner key, so classes never mix. */
+const LIVE_VER = '1.4.2';
 const LIVE_AB = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const newLiveCode = () => Array.from({ length: 6 }, () => LIVE_AB[Math.floor(Math.random() * LIVE_AB.length)]).join('');
 function liveUrl() { return (S && S.liveUrl) || window.VB_LIVE_URL || (S && S.att && S.att.sheet && S.att.sheet.url) || ''; }
@@ -4008,14 +4011,16 @@ function liveOwner() { if (!S.liveOwner) { S.liveOwner = uid() + uid() + uid(); 
 async function liveCall(params, url) {
   url = url || liveUrl(); if (!url) throw new Error('no_url');
   const q = new URLSearchParams(Object.assign({}, params, { _: Date.now() }));
-  const r = await fetch(url + (url.includes('?') ? '&' : '?') + q.toString(), { cache: 'no-store', redirect: 'follow' });
-  const txt = await r.text();
+  const ac = window.AbortController ? new AbortController() : null, tm = ac && setTimeout(() => ac.abort(), 25000);
+  let txt;
+  try { const r = await fetch(url + (url.includes('?') ? '&' : '?') + q.toString(), { cache: 'no-store', redirect: 'follow', signal: ac ? ac.signal : undefined }); txt = await r.text(); }
+  finally { clearTimeout(tm); }
   try { return JSON.parse(txt); } catch (e) { return { ok: false, error: /endpoint is ready/i.test(txt) ? 'old_script' : 'bad_reply' }; }
 }
 function joinLink(code) {
   const url = liveUrl(), m = url.match(/script\.google\.com\/macros\/s\/([\w-]+)\/exec/);
   const base = location.origin + location.pathname.replace(/index\.html$/, '');
-  return `${base}?join=${code}` + (url && url !== window.VB_LIVE_URL ? (m ? `&g=${m[1]}` : `&u=${encodeURIComponent(url)}`) : '');
+  return `${base}?join=${code}&v=${LIVE_VER.replace(/\./g, '')}` + (url && url !== window.VB_LIVE_URL ? (m ? `&g=${m[1]}` : `&u=${encodeURIComponent(url)}`) : '');
 }
 const LIVE_ERR = {
   no_url: 'Add your Google connection first: Menu, then Students join with a QR code.',
@@ -4090,7 +4095,7 @@ function liveSetup(c, kind, getMeta, onItems) {
         if (r.n < (L.n || 0)) L.n = 0; // the server forgot (after 6 hours): start counting again
         else { if (r.items && r.items.length) { onItems(r.items); Snd.play('pop'); } L.n = r.n; }
         save(); status.textContent = L.n ? `${L.n} received` : 'Waiting for answers…'; status.classList.remove('bad');
-      } else if (r.error === 'not_found') { L.n = 0; await publish(L.code); }
+      } else if (r.error === 'not_found') { await publish(L.code); }
       else { status.textContent = LIVE_ERR[r.error] || r.error; status.classList.add('bad'); }
     } catch (e) { if (++fails > 1) { status.textContent = 'Reconnecting…'; status.classList.add('bad'); } }
     busy = false;
@@ -4114,7 +4119,7 @@ function startJoin(params) {
   const card = h('div', { class: 'jn-card' });
   const toastBox = h('div', { id: 'toast' });
   toastEl = toastBox;
-  root.append(h('div', { class: 'jn' }, h('header', { class: 'jn-h' }, h('span', { html: LOGO, style: { display: 'contents' } }), h('b', {}, 'VocaBoard')), card, h('p', { class: 'jn-credit' }, 'Developed by: Ms. Amina Qatan'), toastBox));
+  root.append(h('div', { class: 'jn' }, h('header', { class: 'jn-h' }, h('span', { html: LOGO, style: { display: 'contents' } }), h('b', {}, 'VocaBoard')), card, h('p', { class: 'jn-credit' }, 'Developed by: Ms. Amina Qatan · v' + LIVE_VER), toastBox));
   let meta = null, timer = null;
   const call = async p => { let r = await liveCall(Object.assign({ code }, p), server); if (r.error === 'busy') { await new Promise(res => setTimeout(res, 1200 + Math.random() * 1500)); r = await liveCall(Object.assign({ code }, p), server); } return r; };
   function askCode(msg) {
@@ -4129,9 +4134,13 @@ function startJoin(params) {
     if (!quiet) card.replaceChildren(h('p', { class: 'jn-msg' }, 'Joining…'));
     try {
       const r = await call({ action: 'info' });
-      if (!r.ok) { askCode(r.error === 'not_found' ? `The code ${code} isn’t open right now. Check it with your teacher.` : 'Something went wrong. Try again.'); return; }
-      const changed = !meta || meta.qid !== r.meta.qid || meta.kind !== r.meta.kind || meta.open !== r.meta.open || meta.q !== r.meta.q || JSON.stringify(meta.opts) !== JSON.stringify(r.meta.opts);
-      meta = r.meta; if (changed) show();
+      if (!r.ok) {
+        if (!quiet) { askCode(r.error === 'not_found' ? `The code ${code} isn’t open right now. Check it with your teacher.` : 'Something went wrong. Try again.'); return; }
+      } else {
+        const m = r.meta, same = meta && meta.kind === m.kind && meta.open === m.open;
+        if (same && m.kind === 'wall') { if (meta.q !== m.q) { const t = card.querySelector('h1'); if (t) t.textContent = m.q || 'Share your idea'; } meta = m; }
+        else { const changed = !meta || !same || meta.qid !== m.qid || meta.q !== m.q || JSON.stringify(meta.opts) !== JSON.stringify(m.opts); meta = m; if (changed) show(); }
+      }
     } catch (e) { if (!quiet) askCode('Couldn’t connect. Check the internet and try again.'); }
     clearInterval(timer); timer = setInterval(() => load(true), 6000);
   }
@@ -4150,7 +4159,7 @@ function startJoin(params) {
     }
     if (meta.kind === 'wall') {
       let col = remember('col') || 'butter';
-      const ta = h('textarea', { class: 'inp', id: 'jtext', rows: 4, dir: 'auto', maxlength: 300, placeholder: 'Write your idea…' });
+      const ta = h('textarea', { class: 'inp', id: 'jtext', rows: 4, dir: 'auto', maxlength: 300, placeholder: 'Write your idea…', value: remember('draft_' + code) || '', oninput: () => remember('draft_' + code, ta.value) });
       const nm = h('input', { class: 'inp', id: 'jname', maxlength: 40, dir: 'auto', autocomplete: 'given-name', value: remember('name') || '' });
       const dots = h('div', { class: 'chips' }, WALL_COLS.map(k => h('button', { class: 'chip', type: 'button', 'aria-label': k, 'aria-pressed': String(k === col), style: { background: `var(--${k})`, width: '2.4rem', padding: 0 }, onclick: e => { col = k; remember('col', k); dots.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === e.currentTarget))); } })));
       const sent = h('p', { class: 'jn-ok', hidden: true }, svg('check'), 'Posted! It’s on the board now.');
@@ -4158,10 +4167,16 @@ function startJoin(params) {
       card.replaceChildren(h('p', { class: 'jn-kind' }, meta.title || 'Idea wall'), h('h1', { dir: 'auto' }, meta.q || 'Share your idea'),
         h('form', { class: 'jn-form', onsubmit: async e => {
           e.preventDefault(); const t = ta.value.trim(); if (!t) { ta.focus(); return; }
-          go.disabled = true; remember('name', nm.value.trim());
-          try { const r = await call({ action: 'send', t, c: col, n: nm.value.trim() }); if (r.ok) { ta.value = ''; sent.hidden = false; setTimeout(() => sent.hidden = true, 4000); } else toast(r.error === 'closed' ? 'The wall is closed.' : r.error === 'full' ? 'The wall is full.' : 'Your post wasn’t sent. Try again.'); }
-          catch (er) { toast('No connection. Try again.'); }
-          go.disabled = false;
+          go.disabled = true; go.textContent = 'Sending…'; sent.hidden = true; remember('name', nm.value.trim());
+          try {
+            const post = JSON.stringify({ t, c: col, n: nm.value.trim() });
+            let r = await call({ action: 'send', qid: post });
+            if (!r.ok && r.error === 'not_found') { await new Promise(res => setTimeout(res, 4000)); r = await call({ action: 'send', qid: post }); }
+            if (r.ok) { ta.value = ''; remember('draft_' + code, ''); sent.hidden = false; setTimeout(() => sent.hidden = true, 5000); }
+            else toast(r.error === 'closed' ? 'The wall is closed.' : r.error === 'full' ? 'The wall is full.' : 'Your post wasn’t sent. Tap Post again.');
+          }
+          catch (er) { toast('No connection. Tap Post again.'); }
+          go.disabled = false; go.textContent = 'Post';
         } }, ta, dots, field('Your name (optional)', nm), go), sent);
       return;
     }
