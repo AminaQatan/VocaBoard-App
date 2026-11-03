@@ -89,3 +89,79 @@ Optional, for other teachers: open index.html in a text editor, find
 window.VB_LIVE_URL = '' and paste your Web App address between the quotes.
 Then every teacher using your link can run QR activities without any set
 up (their students' answers pass through your Google Sheet's "Live" tab).
+
+NEW IN VERSION 1.5
+------------------
+- Spin the wheel: student names (from your class lists) or your own list.
+  The picked name pops up big on the screen.
+- Speech timer: green, yellow and red cards for presentations, with a
+  list of speakers and their times.
+- Brainstorm: mind map, tree, columns (T-chart, KWL), flow chart and Venn
+  diagram. Students add ideas from their phones with the QR code.
+- Exit ticket: students answer on their phones before they leave. Save
+  the answers as a spreadsheet file.
+- Dictionary: English and Arabic meaning, phonetics, UK/US sound, example
+  sentence and a picture (needs internet).
+- Word family: create, creation, creative, creatively... shown as a
+  diagram. 124 families are built in; others are found online.
+- Tongue twisters with a timer, and a calculator.
+- Save the board as a picture (PNG) or PDF: the download button at the
+  top right of the board.
+
+To update from version 1.4, upload the new index.html AND sw.js.
+
+NEW IN VERSION 1.6
+------------------
+- Background > Real boards: green chalkboard, blackboard, whiteboard and
+  cork board with real-looking frames, chalk dust, chalk and marker trays.
+- Background > Real nature: sunrise lake, snowy mountains, green hills,
+  misty forest, tropical beach, desert dunes, palm oasis and starry night.
+  They are painted on the device, so they work offline too.
+To update, upload the new index.html AND sw.js.
+
+NEW IN VERSION 1.7
+------------------
+- New bright look: sky blue and lime green, pink buttons and bold dark
+  outlines. Background > Bright has Sky and hills, Sunny park, Confetti,
+  a green board and bright colours. New boards start on Sky and hills.
+  To go back to the first look: Menu > Display > Look > Pastel.
+- TV remote: works with the remote of a Sony (Google TV / Android TV) or
+  other smart TV, and with smart boards that come with a remote.
+    Arrows      move between buttons
+    OK          presses the button
+    Back        closes the open window (press twice to leave VocaBoard)
+    On a tool's name: OK = move it with the arrows, OK again = change its
+    size, Back = done.
+  It turns on by itself on a TV. To switch it on or off by hand:
+  Menu > Display > TV remote control.
+
+NEW IN VERSION 1.7.2
+--------------------
+- 27 new stickers (Stickers button in the tool bar), in groups:
+  Praise: Well done, Super, Amazing, Excellent, You did it, Nice work,
+    Brilliant, Proud of you, Star student, Great idea, Teamwork...
+  Keep trying: Good try, Good effort, Keep going, Almost there.
+  Something to fix: red cross, Oops, Try again, Check again, Not quite,
+    Think again, Spelling, Capital letter, Full stop, Read again,
+    Write neatly, Fix it.
+
+USING VOCABOARD ON A SONY TV
+----------------------------
+TVs can't install web apps, so VocaBoard runs in a TV web browser:
+1. On the TV, open Google Play and install the free browser "TV Bro".
+2. Open TV Bro and go to: aminaqatan.github.io/VocaBoard-App/
+3. In TV Bro's menu, set this page as the home page (or add a bookmark),
+   so VocaBoard opens every time you open TV Bro.
+Your boards are saved on the TV.
+Another way: open VocaBoard on your laptop in Chrome, then Chrome menu
+> Cast > choose the Sony TV. The laptop stays your controller.
+Or connect the laptop to the TV with an HDMI cable.
+
+USING VOCABOARD ON A SMART BOARD
+--------------------------------
+- Board with Windows (or a PC slot): open the link in Chrome or Edge and
+  click the install icon at the right of the address bar.
+- Android board: open the link in Chrome, then menu > Install app (or
+  Add to Home screen). If the board has no Chrome, use its own browser
+  and add a bookmark.
+To update, upload the new index.html AND sw.js.

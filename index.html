@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VocaBoard</title>
 <meta name="description" content="Interactive classroom board with timers, name picker, sound meter, polls and more. Works offline.">
-<meta name="theme-color" content="#f6f6fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#bfe6fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1b1a2a" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,6 +49,19 @@ img{max-width:100%}
   --radius:18px;
   --u:1;
 }
+/* Bright look (the default): sky blue, lime green, hot-pink buttons and bold dark outlines. "Pastel" (html.soft) keeps the first look.
+   This block sits before the dark-mode blocks so dark mode still wins where they overlap. */
+:root:not(.soft){
+  --ink:#1d1b33; --ink-soft:#57546f; --card-2:#edf4fb; --edge:#1d1b33; --on-pastel:#1d1b33; --housing:#1d1b33;
+  --lav:#b49cff; --mint:#bde872; --aqua:#7fd8f5; --pink:#ff94b8; --butter:#ffd84d; --peach:#ffae5e;
+  --focus:#7a4dff;
+  --paper:#d6eefb; --paper-line:rgba(255,255,255,.9); --paper-dot:#9fd0ee;
+  --shadow:0 3px 0 rgba(29,27,51,.10), 0 16px 34px -18px rgba(29,27,51,.42);
+  --shadow-sm:0 4px 0 rgba(29,27,51,.08), 0 8px 18px -10px rgba(29,27,51,.4);
+  --f-display:"Lexend","Tajawal","Segoe UI",system-ui,sans-serif;
+  --radius:20px;
+}
+:root{--pri:#ff3d7f; --pri-2:#d81b5e; --on-pri:#ffffff}
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --ink:#f1efff; --ink-soft:#b4afd8; --card:#262439; --card-2:#312e4a; --edge:#4c4874;
@@ -1113,6 +1126,36 @@ html.joining #toast{position:fixed;bottom:1.5rem}
 .cap-opt span{font-size:.82rem;color:var(--ink-soft)}
 .cap-opt:hover{background:var(--card-2)}
 
+/* ---------- v1.7: TV remote ---------- */
+html.tv.kb :focus{outline:4px solid #ffb703!important;outline-offset:2px!important;box-shadow:0 0 0 8px rgba(255,183,3,.38)!important;position:relative;z-index:3}
+html.tv.kb #dock :focus{outline-offset:-4px!important;box-shadow:inset 0 0 0 8px rgba(255,183,3,.3)!important}
+html.tv.kb .sheet-b :focus{outline-offset:1px!important}
+html.tv .wg:focus-within{box-shadow:0 0 0 3px #ffb703,var(--shadow)}
+html.tv .wg-t[tabindex]{border-radius:.4rem;padding:0 .2rem;cursor:move}
+.wg.tv-moving,.stk.tv-moving{outline:4px dashed #ffb703;outline-offset:3px;transition:none!important}
+.tv-mv{position:absolute;left:50%;top:-.35rem;transform:translate(-50%,-100%);z-index:9;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;padding:.45rem .9rem;border-radius:999px;background:#25223d;color:#fff;font:600 .85rem/1.2 var(--f-ui);box-shadow:var(--shadow-sm);pointer-events:none}
+.wg.tv-moving .tv-mv{top:auto;bottom:.7rem;transform:translateX(-50%);white-space:normal;width:max-content;max-width:calc(100% - 1.2rem);text-align:center}
+.stk .tv-mv{top:calc(100% + .6rem);transform:translateX(-50%)}
+
+/* ---------- v1.7: bright look ---------- */
+:root:not(.soft) .wg,:root:not(.soft) .sheet,:root:not(.soft) .pill,:root:not(.soft) #dock,:root:not(.soft) #dockTab,:root:not(.soft) .palpop{border-width:3px}
+:root:not(.soft) .wg-b{border-radius:0 0 calc(var(--radius) - 3px) calc(var(--radius) - 3px)}
+:root:not(.soft) .btn{font-weight:600}
+:root:not(.soft) .btn.pri{background:var(--pri);border-color:var(--pri);color:var(--on-pri);box-shadow:0 3px 0 var(--pri-2)}
+:root:not(.soft) .btn.pri:active{transform:translateY(2px);box-shadow:0 1px 0 var(--pri-2)}
+:root:not(.soft) .wg-t{color:var(--ink);font-weight:700;letter-spacing:.05em}
+:root:not(.soft) .brand{font-weight:700;letter-spacing:-.01em}
+:root:not(.soft) .sheet-h h2{font-weight:700;letter-spacing:-.015em}
+:root:not(.soft) .sheet-b h3{color:var(--ink);font-weight:700}
+:root:not(.soft) .tool span{color:var(--ink);font-weight:500}
+:root:not(.soft) .seg button{font-weight:500}
+:root:not(.soft) .seg button[aria-pressed="true"]{background:var(--ink);color:var(--card);box-shadow:none}
+:root:not(.soft) .chip[aria-pressed="true"]{background:var(--butter)}
+:root:not(.soft) .empty-board b{font-weight:700;letter-spacing:-.015em}
+:root:not(.soft) .credit b{color:var(--pri)}
+.sw.look-swatch{display:grid;place-items:end start}
+.stk-grid.words{grid-template-columns:repeat(auto-fill,minmax(5.6rem,1fr))}
+
 </style>
 </head>
 <body>
@@ -1286,10 +1329,82 @@ const STK = {
   crown:`<path class="f-butter" d="M12 34l18 16 20-30 20 30 18-16-8 46H20z"/><circle class="f-pink" cx="50" cy="60" r="6"/><circle class="f-aqua" cx="30" cy="64" r="4"/><circle class="f-mint" cx="70" cy="64" r="4"/>`,
   rainbow:`<path d="M10 76a40 40 0 0 1 80 0" stroke="var(--pink)" stroke-width="10"/><path d="M20 76a30 30 0 0 1 60 0" stroke="var(--butter)" stroke-width="10"/><path d="M30 76a20 20 0 0 1 40 0" stroke="var(--mint)" stroke-width="10"/><path d="M40 76a10 10 0 0 1 20 0" stroke="var(--aqua)" stroke-width="10"/><path class="f-card" d="M4 80a10 10 0 0 1 18-6 8 8 0 0 1 12 6 6 6 0 0 1-6 8H10a6 6 0 0 1-6-8zM66 80a10 10 0 0 1 18-6 8 8 0 0 1 12 6 6 6 0 0 1-6 8H72a6 6 0 0 1-6-8z" stroke-width="3"/>`,
   apple:`<path class="f-pink" d="M50 30c-10-8-34-6-34 22 0 20 14 38 26 38 4 0 6-2 8-2s4 2 8 2c12 0 26-18 26-38 0-28-24-30-34-22z"/><path d="M50 30c0-8 2-14 6-18"/><path class="f-mint" d="M56 22c4-8 14-10 20-8-2 8-12 12-20 8z"/>`,
-  wow:`<path class="f-pink" d="M50 4l8 16 17-8-3 18 18 2-12 14 12 14-18 3 3 18-17-8-8 17-8-17-17 8 3-18-18-3 12-14L6 32l18-2-3-18 17 8z"/><text x="50" y="58" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="22" fill="var(--on-pastel)" stroke="none">WOW!</text>`,
+  wow:`<path class="f-pink" d="M50 4l8 16 17-8-3 18 18 2-12 14 12 14-18 3 3 18-17-8-8 17-8-17-17 8 3-18-18-3 12-14L6 32l18-2-3-18 17 8z"/><text x="50" y="58" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="21" fill="var(--on-pastel)" stroke="none" textLength="50" lengthAdjust="spacingAndGlyphs">WOW!</text>`,
   great:`<path class="f-lav" d="M4 34h10v32H4l6-16zM96 34H86v32h10l-6-16z"/><rect class="f-butter" x="12" y="28" width="76" height="44" rx="8"/><text x="50" y="47" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="15" fill="var(--on-pastel)" stroke="none">GREAT</text><text x="50" y="63" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="15" fill="var(--on-pastel)" stroke="none">JOB!</text>`,
   hundred:`<circle class="f-card" cx="50" cy="50" r="42"/><text x="50" y="62" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="34" fill="var(--stop)" stroke="none">100</text><path d="M24 70h52M28 77h44" stroke="var(--stop)" stroke-width="4"/>`,
 };
+/* ---------- word stickers: praise, keep trying, something to fix, Arabic (all drawn here, 100 grid) ---------- */
+const sTx = (t, x, y, fs, o = {}) => {
+  const ar = /[؀-ۿ]/.test(t), est = [...t].length * fs * (ar ? .5 : .7);
+  const fit = !ar && o.max && est > o.max ? ` textLength="${o.max}" lengthAdjust="spacingAndGlyphs"` : '';
+  return `<text x="${x}" y="${y}" text-anchor="middle" font-family="${ar ? 'Tajawal' : 'Fredoka'}, sans-serif" font-weight="${o.w || 700}" font-size="${fs}" fill="${o.fill || 'var(--on-pastel)'}" stroke="none"${fit}>${t}</text>`;
+};
+const sStar = (cx, cy, R, r, n) => { let d = ''; for (let i = 0; i < n * 2; i++) { const a = i * Math.PI / n - Math.PI / 2, q = i % 2 ? r : R; d += (i ? 'L' : 'M') + (cx + Math.cos(a) * q).toFixed(1) + ' ' + (cy + Math.sin(a) * q).toFixed(1); } return d + 'Z'; };
+const sScallop = (cx, cy, r, n) => { const pt = i => { const a = i / n * Math.PI * 2 - Math.PI / 2; return [(cx + Math.cos(a) * r).toFixed(1), (cy + Math.sin(a) * r).toFixed(1)]; }; const rb = (r * Math.sin(Math.PI / n) * 1.1).toFixed(1); let d = 'M' + pt(0).join(' '); for (let i = 1; i <= n; i++) d += `A${rb} ${rb} 0 0 1 ${pt(i).join(' ')}`; return d + 'Z'; };
+const sArc = (cx, cy, r, a0, a1) => { // clockwise arc with an arrow head at the end (angles in degrees, 0 = right)
+  const P = a => [cx + Math.cos(a * Math.PI / 180) * r, cy + Math.sin(a * Math.PI / 180) * r], [x0, y0] = P(a0), [x1, y1] = P(a1);
+  const t = (a1 + 90) * Math.PI / 180, nx = Math.cos(a1 * Math.PI / 180), ny = Math.sin(a1 * Math.PI / 180), tx = Math.cos(t), ty = Math.sin(t), f = v => v.toFixed(1);
+  return `<path d="M${f(x0)} ${f(y0)}A${r} ${r} 0 ${(a1 - a0 + 360) % 360 > 180 ? 1 : 0} 1 ${f(x1)} ${f(y1)}" stroke-width="6"/><path class="f-ink" d="M${f(x1 + tx * 9)} ${f(y1 + ty * 9)}L${f(x1 + nx * 8 - tx * 3)} ${f(y1 + ny * 8 - ty * 3)}L${f(x1 - nx * 8 - tx * 3)} ${f(y1 - ny * 8 - ty * 3)}Z" stroke-width="3"/>`;
+};
+const sMark = (d, col, w = 12) => `<path d="${d}" stroke-width="${w + 9}"/><path d="${d}" stroke="${col}" stroke-width="${w}"/>`;
+const sRosette = (fill, inner = 'f-card') => `<path class="f-pink" d="M36 58L26 94l11-7 9 9 5-34z"/><path class="f-aqua" d="M64 58l10 36-11-7-9 9-5-34z"/><path class="${fill}" d="${sScallop(50, 42, 33, 14)}"/><circle class="${inner}" cx="50" cy="42" r="24" stroke-width="3.5"/>`;
+const sBanner = fill => `<path class="f-aqua" d="M20 42H4l8 14-8 14h18zM80 42h16l-8 14 8 14H78z"/><path class="${fill}" d="M14 28q36-8 72 0v46q-36-8-72 0z"/>`;
+const sArrows = fill => `<circle class="${fill}" cx="50" cy="50" r="44"/><g stroke-width="6">${sArc(50, 50, 33, 150, 285)}${sArc(50, 50, 33, 330, 105)}</g>`;
+const sLabel = (fill, y = 72, hh = 24) => `<rect class="${fill}" x="6" y="${y}" width="88" height="${hh}" rx="${hh / 2}" stroke-width="4.5"/>`;
+Object.assign(STK, {
+  /* praise */
+  welldone: `${sBanner('f-mint')}<path class="f-butter" d="${sStar(50, 15, 12, 5.5, 5)}" stroke-width="3.5"/>${sTx('WELL', 50, 46, 15, { max: 62 })}${sTx('DONE!', 50, 63, 15, { max: 62 })}`,
+  super: `<path class="f-aqua" d="M14 18h72a8 8 0 0 1 8 8v38a8 8 0 0 1-8 8H46L28 90V72H14a8 8 0 0 1-8-8V26a8 8 0 0 1 8-8z"/><path class="f-butter" d="M90 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" stroke-width="3"/>${sTx('SUPER!', 50, 54, 21, { max: 76 })}`,
+  amazing: `<path class="f-lav" d="${sStar(50, 46, 46, 21, 5)}"/><rect class="f-card" x="5" y="54" width="90" height="22" rx="5" stroke-width="4.5"/>${sTx('AMAZING!', 50, 70, 14, { max: 80 })}`,
+  youdidit: `<circle class="f-mint" cx="50" cy="52" r="36"/><g stroke-width="3"><rect class="f-pink" x="6" y="8" width="9" height="9" rx="2" transform="rotate(20 10 12)"/><circle class="f-butter" cx="88" cy="14" r="5"/><path class="f-aqua" d="M84 86l9 3-6 7z"/><circle class="f-pink" cx="9" cy="86" r="4"/><path d="M76 4q4 4 8 0" stroke="var(--peach)" stroke-width="4"/></g>${sTx('YOU', 50, 48, 16, { max: 52 })}${sTx('DID IT!', 50, 66, 15, { max: 58 })}`,
+  excellent: `<path class="f-aqua" d="M26 2h14l12 30H38z"/><path class="f-pink" d="M74 2H60L48 32h14z"/><circle class="f-butter" cx="50" cy="48" r="23"/><path class="f-peach" d="${sStar(50, 48, 13, 6, 5)}" stroke-width="3"/>${sLabel('f-card', 74, 22)}${sTx('EXCELLENT', 50, 90, 13, { max: 80 })}`,
+  nicework: `<path class="f-card" d="M24 6h38l14 14v54H24z"/><path d="M62 6v14h14" stroke-width="4"/>${sMark('M34 40l10 10 22-22', 'var(--go)', 8)}${sLabel('f-butter', 66, 26)}${sTx('NICE WORK', 50, 85, 14, { max: 82 })}`,
+  brilliant: `<path class="f-aqua" d="M28 10h44l18 20-40 42-40-42z"/><path d="M10 30h80M28 10l10 20 12 42 12-42 10-20M38 30l12-20 12 20" stroke-width="3.5"/>${sLabel('f-pink', 70, 24)}${sTx('BRILLIANT!', 50, 88, 13, { max: 80 })}`,
+  proud: `<path class="f-pink" d="M50 92S6 66 6 36a22 22 0 0 1 44-7 22 22 0 0 1 44 7c0 30-44 56-44 56z"/>${sTx('PROUD', 50, 48, 15, { max: 56 })}${sTx('OF YOU', 50, 64, 13, { max: 52 })}`,
+  starstudent: `<path class="f-butter" d="${sStar(50, 40, 38, 24, 6)}"/><circle class="f-card" cx="50" cy="40" r="15" stroke-width="3.5"/>${sTx('STAR', 50, 44, 10, { max: 24 })}${sLabel('f-lav', 68, 24)}${sTx('STUDENT', 50, 86, 15, { max: 76 })}`,
+  greatidea: `<g stroke-width="4"><path d="M16 18l8 6M84 18l-8 6M50 2v6M10 44h8M82 44h8"/></g><path class="f-butter" d="M50 12a22 22 0 0 0-13 40c3 2 4 5 4 8v4h18v-4c0-3 1-6 4-8a22 22 0 0 0-13-40z"/><path d="M50 56V44l-5-5M50 44l5-5" stroke-width="3.5"/>${sLabel('f-mint', 70, 24)}${sTx('GREAT IDEA!', 50, 88, 12, { max: 80 })}`,
+  teamwork: `<path class="f-mint" d="M18 30H40a10 10 0 1 1 18 0H80V50a10 10 0 1 1 0 18V92H18z"/>${sTx('TEAM', 49, 59, 15, { max: 54 })}${sTx('WORK', 49, 78, 15, { max: 54 })}`,
+  /* keep trying */
+  goodtry: `${sRosette('f-butter')}${sTx('GOOD', 50, 40, 13, { max: 40 })}${sTx('TRY!', 50, 55, 14, { max: 40 })}`,
+  goodeffort: `<path class="f-peach" d="M50 4l40 23v46L50 96 10 73V27z"/><path d="M50 14l31 18v36L50 86 19 68V32z" stroke="#fff" stroke-width="3" opacity=".8"/>${sTx('GOOD', 50, 47, 16, { max: 56 })}${sTx('EFFORT', 50, 65, 14, { max: 58 })}`,
+  keepgoing: `<path class="f-peach" d="M44 64h12v32H44z"/><path class="f-butter" d="M6 14h62l26 26-26 26H6z"/>${sTx('KEEP', 39, 36, 15, { max: 56 })}${sTx('GOING!', 39, 55, 14, { max: 58 })}`,
+  almost: `<path class="f-mint" d="M2 96C14 70 34 54 58 48c16-4 30 6 40 48z"/><path d="M70 48V14"/><path class="f-pink" d="M70 14h24l-7 8 7 8H70z" stroke-width="4"/><path d="M14 88q18-18 38-30" stroke-width="4" stroke-dasharray="1 9"/>${sTx('ALMOST', 34, 22, 14, { max: 60 })}${sTx('THERE!', 34, 38, 14, { max: 60 })}`,
+  /* something to fix */
+  cross: sMark('M26 26l48 48M74 26L26 74', 'var(--stop)', 13),
+  oops: `<circle class="f-peach" cx="48" cy="38" r="30"/><circle class="f-ink" cx="38" cy="34" r="4.5" stroke="none"/><circle class="f-ink" cx="58" cy="34" r="4.5" stroke="none"/><circle cx="48" cy="50" r="5.5" stroke-width="4"/><path class="f-aqua" d="M82 10c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15z" stroke-width="3.5"/>${sLabel('f-butter', 72, 24)}${sTx('OOPS!', 50, 90, 17, { max: 70 })}`,
+  tryagain: `${sArrows('f-aqua')}${sTx('TRY', 50, 48, 14, { max: 40 })}${sTx('AGAIN', 50, 63, 13, { max: 42 })}`,
+  checkagain: `${sMark('M64 64l24 24', 'var(--peach)', 9)}<circle class="f-card" cx="42" cy="42" r="34"/><circle cx="42" cy="42" r="27" stroke="var(--aqua)" stroke-width="4"/>${sTx('CHECK', 42, 41, 12, { max: 44 })}${sTx('AGAIN', 42, 56, 12, { max: 44 })}`,
+  notquite: `<path class="f-butter" d="M50 4l42 72H8z"/><path d="M50 26v24" stroke-width="8"/><circle class="f-ink" cx="50" cy="62" r="5" stroke="none"/>${sLabel('f-peach', 72, 24)}${sTx('NOT QUITE', 50, 89, 13, { max: 74 })}`,
+  thinkagain: `<circle class="f-lav" cx="20" cy="84" r="6" stroke-width="4"/><circle class="f-lav" cx="9" cy="95" r="3.5" stroke-width="3"/><path class="f-lav" d="M24 70a15 15 0 0 1 0-30 20 20 0 0 1 36-12 17 17 0 0 1 24 14 13 13 0 0 1-4 28z"/>${sTx('THINK', 53, 51, 14, { max: 52 })}${sTx('AGAIN', 53, 65, 13, { max: 50 })}`,
+  spelling: `<rect class="f-butter" x="6" y="10" width="26" height="26" rx="5" stroke-width="4"/><rect class="f-pink" x="37" y="10" width="26" height="26" rx="5" stroke-width="4"/><rect class="f-aqua" x="68" y="10" width="26" height="26" rx="5" stroke-width="4"/>${sTx('A', 19, 31, 19)}${sTx('B', 50, 31, 19)}${sTx('C', 81, 31, 19)}<rect class="f-card" x="4" y="46" width="92" height="30" rx="8" stroke-width="4.5"/>${sTx('SPELLING?', 50, 67, 15, { max: 82 })}<path d="M12 86q5-6 10 0t10 0 10 0 10 0 10 0 10 0 10 0 10 0" stroke="var(--stop)" stroke-width="4"/>`,
+  capital: `<rect class="f-lav" x="10" y="4" width="80" height="92" rx="14"/>${sTx('A', 42, 50, 46)}<path d="M72 46V22M64 30l8-8 8 8" stroke-width="5"/>${sTx('CAPITAL', 50, 70, 13, { max: 70 })}${sTx('LETTER', 50, 86, 13, { max: 70 })}`,
+  fullstop: `<rect class="f-butter" x="8" y="6" width="84" height="88" rx="14"/>${sTx('FULL', 50, 34, 19, { max: 70 })}${sTx('STOP', 50, 55, 19, { max: 70 })}<circle class="f-ink" cx="50" cy="74" r="7" stroke="none"/><circle cx="50" cy="74" r="14" stroke="var(--stop)" stroke-width="4"/>`,
+  readagain: `${sTx('READ AGAIN', 50, 22, 15, { max: 88 })}<path class="f-aqua" d="M4 40v52c16-6 32-6 46 2 14-8 30-8 46-2V40"/><path class="f-card" d="M50 40C38 30 22 30 8 36v50c14-6 30-6 42 2zM50 40c12-10 28-10 42-4v50c-14-6-30-6-42 2z"/><path d="M50 40v48" stroke-width="3.5"/><path d="M16 50c9-3 18-3 26 1M16 62c9-3 18-3 26 1M58 51c8-4 17-4 26-1M58 63c8-4 17-4 26-1" stroke="var(--aqua)" stroke-width="3"/><path class="f-pink" d="M64 34v16l5-5 5 5V32" stroke-width="3"/>`,
+  neat: `<rect class="f-card" x="8" y="26" width="84" height="68" rx="8"/><path d="M18 60h64M18 78h64" stroke="var(--aqua)" stroke-width="2.5"/><path class="f-butter" d="M22 8h52v16H22z" stroke-width="4"/><path class="f-pink" d="M74 8h12a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H74z" stroke-width="4"/><path class="f-peach" d="M22 8L8 16l14 8z" stroke-width="4"/>${sTx('WRITE', 50, 55, 15, { max: 70 })}${sTx('NEATLY', 50, 74, 15, { max: 70 })}`,
+  fixit: `<g transform="rotate(-12 50 38)"><path class="f-pink" d="M16 22h42v30H16z"/><path class="f-card" d="M58 22h26v30H58z"/></g><g class="f-ink" stroke="none"><circle cx="30" cy="66" r="2.5"/><circle cx="42" cy="70" r="2"/><circle cx="56" cy="67" r="2.5"/><circle cx="68" cy="71" r="2"/></g>${sLabel('f-butter', 74, 22)}${sTx('FIX IT', 50, 91, 16, { max: 70 })}`,
+  /* Arabic */
+  ar_ahsant: `<path class="f-butter" d="${sStar(50, 38, 37, 17, 5)}"/><circle class="f-card" cx="50" cy="40" r="6" stroke-width="3"/>${sLabel('f-pink', 68, 28)}${sTx('أحسنت', 50, 89, 19)}`,
+  ar_mumtaz: `${sRosette('f-mint')}${sTx('ممتاز', 50, 49, 15)}`,
+  ar_raee: `<path class="f-pink" d="M50 92S6 66 6 36a22 22 0 0 1 44-7 22 22 0 0 1 44 7c0 30-44 56-44 56z"/>${sTx('رائع', 50, 58, 24)}`,
+  ar_amal: `${sBanner('f-lav')}<path class="f-butter" d="${sStar(50, 15, 12, 5.5, 5)}" stroke-width="3.5"/>${sTx('عمل رائع', 50, 60, 15)}`,
+  ar_muhawala: `<circle class="f-aqua" cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="36" stroke="#fff" stroke-width="3" stroke-dasharray="2 7" opacity=".9"/>${sTx('محاولة', 50, 48, 17)}${sTx('جيدة', 50, 70, 19)}`,
+  ar_qarib: `<circle class="f-card" cx="50" cy="40" r="35"/><circle class="f-pink" cx="50" cy="40" r="25" stroke-width="3.5"/><circle class="f-card" cx="50" cy="40" r="15" stroke-width="3.5"/><circle class="f-pink" cx="50" cy="40" r="6" stroke-width="3"/><path d="M58 32L84 8" stroke-width="4"/><path class="f-butter" d="M84 8l2-8 6 6zM84 8l8-2-6 6z" stroke-width="3"/>${sLabel('f-butter', 72, 24)}${sTx('قريب جداً', 50, 90, 15)}`,
+  ar_khata: `<g transform="rotate(-25 50 36)"><rect class="f-peach" x="10" y="24" width="80" height="26" rx="13"/><rect class="f-card" x="38" y="27" width="24" height="20" rx="3" stroke-width="3"/><g class="f-ink" stroke="none"><circle cx="20" cy="33" r="1.8"/><circle cx="26" cy="41" r="1.8"/><circle cx="76" cy="33" r="1.8"/><circle cx="82" cy="41" r="1.8"/></g></g>${sLabel('f-card', 72, 24)}${sTx('خطأ بسيط', 50, 90, 16)}`,
+  ar_hawil: `${sArrows('f-mint')}${sTx('حاول', 50, 48, 15)}${sTx('مرة أخرى', 50, 65, 11.5)}`,
+});
+const STK_GROUPS = [
+  ['Praise', ['welldone', 'super', 'great', 'amazing', 'excellent', 'youdidit', 'nicework', 'brilliant', 'proud', 'starstudent', 'greatidea', 'teamwork', 'wow', 'hundred']],
+  ['Keep trying', ['goodtry', 'goodeffort', 'keepgoing', 'almost']],
+  ['Something to fix', ['cross', 'oops', 'tryagain', 'checkagain', 'notquite', 'thinkagain', 'spelling', 'capital', 'fullstop', 'readagain', 'neat', 'fixit']],
+  ['Pictures', ['star', 'heart', 'thumb', 'trophy', 'smile', 'check', 'bulb', 'rocket', 'crown', 'rainbow', 'apple']],
+];
+const STK_NAME = { star: 'Star', heart: 'Heart', thumb: 'Thumbs up', trophy: 'Trophy', smile: 'Smiley', check: 'Tick', bulb: 'Light bulb', rocket: 'Rocket', crown: 'Crown', rainbow: 'Rainbow', apple: 'Apple',
+  wow: 'Wow!', great: 'Great job!', hundred: '100', welldone: 'Well done!', super: 'Super!', amazing: 'Amazing!', youdidit: 'You did it!', excellent: 'Excellent', nicework: 'Nice work', brilliant: 'Brilliant!',
+  proud: 'Proud of you', starstudent: 'Star student', greatidea: 'Great idea!', teamwork: 'Teamwork', goodtry: 'Good try!', goodeffort: 'Good effort', keepgoing: 'Keep going!', almost: 'Almost there!',
+  cross: 'Wrong (red cross)', oops: 'Oops!', tryagain: 'Try again', checkagain: 'Check again', notquite: 'Not quite', thinkagain: 'Think again', spelling: 'Check your spelling', capital: 'Capital letter',
+  fullstop: 'Full stop', readagain: 'Read again', neat: 'Write neatly', fixit: 'Fix it', ar_ahsant: 'أحسنت', ar_mumtaz: 'ممتاز', ar_raee: 'رائع', ar_amal: 'عمل رائع', ar_muhawala: 'محاولة جيدة',
+  ar_qarib: 'قريب جداً', ar_khata: 'خطأ بسيط', ar_hawil: 'حاول مرة أخرى' };
+const STK_WORDY = new Set(STK_GROUPS.slice(0, 3).flatMap(g => g[1]));
 function stkSvg(k){ return `<svg viewBox="0 0 100 100" fill="none" stroke="var(--on-pastel)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--on-pastel)" aria-hidden="true">${STK[k] || STK.star}</svg>`; }
 
 /* ---------- Illustrated backgrounds (original drawings, 1600x900 scenes and repeating tiles) ---------- */
@@ -1468,7 +1583,51 @@ function scenePenguins() {
   ${penguin(560, 735, 1.6, true)}${penguin(830, 752, 1.35)}${penguin(1080, 742, 1.5)}${penguin(955, 805, .75)}`);
 }
 
+/* ---------- Bright scenes: flat sky blue and lime with bold dark outlines ---------- */
+const BI = '#1d1b33';
+const bCloud = (x, y, k) => `<path transform="translate(${x} ${y}) scale(${k})" d="M-86 22C-118 22 -118 -18 -84 -20C-80 -54 -34 -62 -16 -38C-2 -70 54 -68 60 -28C96 -32 104 20 72 22Z" fill="#fff" stroke="${BI}" stroke-width="${(5 / k).toFixed(2)}"/>`;
+const bSun = (x, y, r) => { let g = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; g += `<path d="M${(x + Math.cos(a) * (r + 18)).toFixed(1)} ${(y + Math.sin(a) * (r + 18)).toFixed(1)}L${(x + Math.cos(a) * (r + 40)).toFixed(1)} ${(y + Math.sin(a) * (r + 40)).toFixed(1)}"/>`; } return `<g stroke="${BI}" stroke-width="5">${g}</g><circle cx="${x}" cy="${y}" r="${r}" fill="#ffd84d" stroke="${BI}" stroke-width="5"/><path d="M${x - r * .55} ${y - r * .1}a${r * .55} ${r * .55} 0 0 1 ${r * .35} -${r * .42}" fill="none" stroke="#fff" stroke-width="7" opacity=".8"/>`; };
+const bFlower = (x, y, r, col) => { let p = ''; for (let i = 0; i < 5; i++) { const a = i * 1.2566 - 1.5708; p += `<circle cx="${(x + Math.cos(a) * r).toFixed(1)}" cy="${(y + Math.sin(a) * r).toFixed(1)}" r="${(r * .72).toFixed(1)}"/>`; } return `<path d="M${x} ${y + r}v${r * 2.6}" stroke="${BI}" stroke-width="4"/><g fill="${col}" stroke="${BI}" stroke-width="3.5">${p}</g><circle cx="${x}" cy="${y}" r="${(r * .55).toFixed(1)}" fill="#ffd84d" stroke="${BI}" stroke-width="3.5"/>`; };
+const bTuft = (x, y) => `<path d="M${x} ${y}q5 -16 10 0q5 -18 10 0q5 -14 10 0" fill="none" stroke="${BI}" stroke-width="4"/>`;
+const bBalloon = (x, y, col, sx, sy) => `<path d="M${x} ${y + 44}C${x + 4} ${y + 80} ${sx - 10} ${sy - 50} ${sx} ${sy}" fill="none" stroke="${BI}" stroke-width="3"/><path d="M${x - 7} ${y + 50}L${x} ${y + 40}L${x + 7} ${y + 50}Z" fill="${col}" stroke="${BI}" stroke-width="3.5"/><ellipse cx="${x}" cy="${y}" rx="36" ry="44" fill="${col}" stroke="${BI}" stroke-width="5"/><path d="M${x - 20} ${y - 14}q4 -16 18 -22" fill="none" stroke="#fff" stroke-width="6" opacity=".85"/>`;
+const bTree = (x, y, h, col) => `<path d="M${x - 9} ${y}V${y - h * .5}h18V${y}Z" fill="#b5713f" stroke="${BI}" stroke-width="5"/><circle cx="${x}" cy="${y - h * .72}" r="${h * .34}" fill="${col}" stroke="${BI}" stroke-width="5"/><path d="M${x - h * .18} ${y - h * .86}q${h * .08} -${h * .1} ${h * .2} -${h * .1}" fill="none" stroke="#fff" stroke-width="6" opacity=".6"/>`;
+function brightGround(seed, y1, y2, n) {
+  const r = rnd(seed); let d = '';
+  for (let i = 0; i < n; i++) { const x = Math.round(40 + r() * 1520), y = Math.round(y2 + 30 + r() * 120); d += i % 3 ? bTuft(x, y) : bFlower(x, y - 16, 7 + r() * 3, ['#ff94b8', '#fff', '#b49cff'][i % 3 === 0 ? (i / 3) % 3 : 0]); }
+  return `<path d="M0 ${y1}C260 ${y1 - 70} 540 ${y1 - 50} 780 ${y1 - 4}C1020 ${y1 + 42} 1280 ${y1 - 60} 1600 ${y1 - 34}V900H0Z" fill="#b1db63"/>
+  <path d="M0 ${y2}C320 ${y2 - 54} 640 ${y2 - 8} 920 ${y2}C1200 ${y2 + 8} 1420 ${y2 - 44} 1600 ${y2 - 28}V900H0Z" fill="#c6e77e"/>${d}`;
+}
+function sceneBrHills() {
+  return wrap(`<rect width="1600" height="900" fill="#bfe6fb"/>${bSun(1380, 160, 62)}
+  ${bCloud(330, 170, 1.1)}${bCloud(820, 120, .85)}${bCloud(1080, 280, .7)}
+  <g transform="translate(1120 210) rotate(-14)"><path d="M0 120C-20 170 30 200 10 250C-6 290 30 320 20 360" fill="none" stroke="${BI}" stroke-width="3"/>
+  <path d="M-8 180l16 -8l-2 18z M2 262l18 -6l-4 18z" fill="#ffd84d" stroke="${BI}" stroke-width="3"/>
+  <path d="M0 -70L50 0L0 120L-50 0Z" fill="#ff94b8" stroke="${BI}" stroke-width="5"/><path d="M0 -70V120M-50 0H50" stroke="${BI}" stroke-width="3.5"/><path d="M0 -70L50 0L0 0Z" fill="#b49cff" stroke="${BI}" stroke-width="3.5"/></g>
+  ${bBalloon(190, 330, '#ffd84d', 240, 560)}${bBalloon(262, 300, '#b49cff', 240, 560)}${bBalloon(236, 392, '#ff94b8', 240, 560)}
+  ${brightGround(21, 640, 730, 30)}`);
+}
+function sceneBrPark() {
+  return wrap(`<rect width="1600" height="900" fill="#bfe6fb"/>${bSun(220, 170, 56)}${bCloud(640, 150, 1)}${bCloud(1240, 120, 1.15)}${bCloud(1480, 300, .6)}
+  <path d="M0 610C400 570 1200 570 1600 600V900H0Z" fill="#b1db63"/>
+  ${bTree(120, 650, 220, '#8fd14f')}${bTree(330, 640, 160, '#6fc24a')}${bTree(1290, 640, 190, '#8fd14f')}${bTree(1480, 655, 240, '#6fc24a')}
+  <path d="M0 690C340 650 1260 650 1600 680V900H0Z" fill="#c6e77e"/>
+  <path d="M782 690C774 760 712 830 640 900H960C892 830 830 760 822 690Z" fill="#f3e2c0" stroke="${BI}" stroke-width="5"/>
+  ${(() => { const r = rnd(33); let d = ''; for (let i = 0; i < 26; i++) { const x = Math.round(30 + r() * 1540); if (x > 620 && x < 980) continue; d += i % 2 ? bTuft(x, Math.round(730 + r() * 140)) : bFlower(x, Math.round(720 + r() * 130), 7 + r() * 3, ['#ff94b8', '#fff', '#ffae5e', '#b49cff'][i % 4]); } return d; })()}`);
+}
+function tileBrConfetti() {
+  return wrap(`<rect width="400" height="400" fill="#bfe6fb"/>
+  <g stroke="${BI}" stroke-width="4">
+  <path d="M70 46l8 16 18 3-13 12 3 18-16-8-16 8 3-18-13-12 18-3z" fill="#ffd84d"/>
+  <circle cx="300" cy="80" r="14" fill="#ff94b8"/>
+  <path d="M236 248l32 7-22 25z" fill="#c6e77e"/>
+  <rect x="70" y="270" width="28" height="28" rx="7" transform="rotate(18 84 284)" fill="#b49cff"/>
+  <path d="M170 150q10 -12 20 0t20 0" fill="none" stroke="#ff3d7f" stroke-width="6"/>
+  <path d="M320 336q9 -10 18 0" fill="none" stroke="#7a4dff" stroke-width="5"/>
+  <circle cx="356" cy="210" r="9" fill="#ffae5e"/></g>
+  <g fill="${BI}"><circle cx="200" cy="44" r="4"/><circle cx="34" cy="180" r="3.5"/><circle cx="160" cy="350" r="4"/><circle cx="380" cy="380" r="3"/></g>`, 400, 400);
+}
 const SCENES = {
+  brhills: ['Sky and hills', 'bright', '#bfe6fb', sceneBrHills], brpark: ['Sunny park', 'bright', '#bfe6fb', sceneBrPark], brconfetti: ['Confetti', 'bright', '#bfe6fb', tileBrConfetti, true],
   mountains: ['Mountain lake', 'nature', '#8ccbf0', sceneMountains], meadow: ['Spring meadow', 'nature', '#9fdcfa', sceneMeadow],
   desert: ['Desert sunset', 'nature', '#c56b8f', sceneDesert], beach: ['Beach', 'nature', '#7fd3fb', sceneBeach],
   forest: ['Forest', 'nature', '#cdeedb', sceneForest], night: ['Starry night', 'nature', '#0e1440', sceneNight],
@@ -2166,7 +2325,7 @@ function paintItem(rec) {
   else if (wd.type === 'note') { rec.el.dataset.note = s.col; }
 }
 function mountItem(wd) {
-  const el = h('div', { class: 'stk it-' + wd.type, 'data-id': wd.id, tabindex: '0', role: wd.type === 'note' ? 'group' : 'img', 'aria-label': { sticker: 'Sticker', shape: (SHP[wd.s.k] || SHP.square)[0], note: 'Sticky note' }[wd.type] });
+  const el = h('div', { class: 'stk it-' + wd.type, 'data-id': wd.id, tabindex: '0', role: wd.type === 'note' ? 'group' : 'img', 'aria-label': { sticker: 'Sticker: ' + (STK_NAME[wd.s.k] || 'star'), shape: (SHP[wd.s.k] || SHP.square)[0], note: 'Sticky note' }[wd.type] });
   const art = h('div', { class: 'it-art' });
   const rec = { wd, el, art, item: true, ticks: [], cleanups: [] };
   el.append(art);
@@ -2236,7 +2395,7 @@ function addItem(type, s) {
   const b = board(), { W, H } = boardSize(), k = scaleK();
   const n = b.widgets.filter(isItem).length % 6;
   const wd = { id: uid(), type, x: .5 + (n - 2.5) * .035, y: .45 + (n % 3 - 1) * .05, z: ++zTop, s };
-  if (type === 'sticker') s.size = s.size || Math.round(120 * k);
+  if (type === 'sticker') s.size = s.size || Math.round((STK_WORDY.has(s.k) ? 150 : 120) * k); // word stickers start a little bigger so they can be read
   b.widgets.push(wd); mountItem(wd); updateEmpty(); save();
   const rec = live.get(wd.id);
   document.querySelectorAll('.stk.sel').forEach(x => x.classList.remove('sel'));
@@ -2425,7 +2584,7 @@ function exampleClass() {
   return { id: uid(), name: 'Example class', names: ['Aisha', 'Omar', 'Maryam', 'Yousef', 'Layla', 'Hamed', 'Noor', 'Salim', 'Fatma', 'Khalid', 'Huda', 'Saif', 'Reem', 'Ali', 'Zainab', 'Majid', 'Sara', 'Ahmed'], absent: [] };
 }
 function defaults() {
-  const b = { id: uid(), name: 'Lesson board', bg: { k: 'grid' }, widgets: [] };
+  const b = { id: uid(), name: 'Lesson board', bg: { k: 'scene', v: 'brhills' }, widgets: [] };
   return { v: 1, cur: b.id, boards: [b], classes: [exampleClass()], theme: 'auto', ui: 'auto', wake: true, mute: false, dock: true, first: true };
 }
 function load() {
@@ -2487,6 +2646,7 @@ function mountWidget(wd) {
   else for (const k in d0) if (k !== '_title' && !(k in wd.s)) wd.s[k] = d0[k];
   const el = h('section', { class: 'wg wg-' + wd.type, 'data-id': wd.id, 'aria-label': def.title });
   const title = h('span', { class: 'wg-t', title: 'Double-tap to rename' }, wd.s._title || def.title);
+  tvTitle(title);
   const rec = { wd, el, title, editing: false, ticks: [], cleanups: [], inst: null };
   rec.editBtn = def.edit ? ib('edit', 'Edit', () => { rec.editing = !rec.editing; render(rec); }) : null;
   rec.maxBtn = ib('max', 'Enlarge', () => toggleMax(rec));
@@ -2509,7 +2669,7 @@ const WCOL = [['', 'Default', 'var(--card)'], ['white', 'White', '#ffffff'], ['b
   ['lav', 'Purple', 'var(--lav)'], ['sky', 'Light blue', '#cfe6ff'], ['aqua', 'Turquoise', 'var(--aqua)'], ['mint', 'Green', 'var(--mint)'], ['sand', 'Sand', '#f3e2c0'],
   ['grey', 'Grey', '#e4e7ec'], ['navy', 'Navy', '#26335f'], ['chalk', 'Chalkboard green', '#2e4a3f'], ['plum', 'Plum', '#5a2f5e'], ['night', 'Black', '#202227']];
 let palEl = null;
-function closePal() { if (!palEl) return; palEl.remove(); palEl = null; document.removeEventListener('pointerdown', palOut, true); }
+function closePal() { if (!palEl) return; const had = palEl.contains(document.activeElement), r = palEl._rec; palEl.remove(); palEl = null; document.removeEventListener('pointerdown', palOut, true); if (had && tvOn() && r && r.colBtn.isConnected) tvFocus(r.colBtn); }
 function palOut(e) { if (palEl && !palEl.contains(e.target) && !(e.target.closest && e.target.closest('.pal-btn'))) closePal(); }
 function setCol(wd, k) { if (k) wd.s.note = k; else delete wd.s.note; const r = live.get(wd.id); if (r) { if (k) r.el.dataset.note = k; else delete r.el.dataset.note; } }
 function openPal(rec) {
@@ -2524,6 +2684,7 @@ function openPal(rec) {
   palEl.style.left = clamp(r.right - pw, 8, innerWidth - pw - 8) + 'px';
   palEl.style.top = (r.bottom + ph + 8 > innerHeight ? Math.max(8, r.top - ph - 6) : r.bottom + 6) + 'px';
   setTimeout(() => document.addEventListener('pointerdown', palOut, true));
+  if (tvOn()) tvFocus(palEl.querySelector('[aria-pressed="true"]') || palEl.querySelector('button'));
 }
 function render(rec) {
   for (const f of rec.ticks) tickers.delete(f); rec.ticks = [];
@@ -2708,20 +2869,39 @@ function toast(msg, o = {}) {
   while (toastEl.children.length > 3) toastEl.firstChild.remove();
   setTimeout(close, o.ms || (o.action ? 6000 : 3500));
 }
-let sheetWrap = null;
-function closeSheet() { if (sheetWrap) { sheetWrap.remove(); sheetWrap = null; } }
+let sheetWrap = null, sheetBack = null;
+const SHEET_FOC = 'button, a[href], input, select, textarea, [tabindex]';
+function closeSheet() {
+  if (!sheetWrap) return;
+  const had = sheetWrap.contains(document.activeElement), back = sheetBack;
+  sheetWrap.remove(); sheetWrap = null; sheetBack = null;
+  if (had && back && back.isConnected && tvOn()) tvFocus(back);
+}
 function sheet(title, build, side) {
-  closeSheet();
+  // re-opening the same window (after a choice) keeps the place and the focused button
+  let keepIdx = -1, keepTop = 0, back = document.activeElement;
+  if (sheetWrap) {
+    back = sheetBack;
+    if (sheetWrap._title === title) { keepIdx = [...sheetWrap.querySelectorAll(SHEET_FOC)].indexOf(document.activeElement); const ob = sheetWrap.querySelector('.sheet-b'); keepTop = ob ? ob.scrollTop : 0; }
+    sheetWrap.remove(); sheetWrap = null;
+  }
+  sheetBack = back && back !== document.body && back.isConnected ? back : null;
   const body = h('div', { class: 'sheet-b' });
   sheetWrap = h('div', { class: 'sheet-wrap' + (side ? ' side' : ''), onpointerdown: e => { if (e.target === sheetWrap) closeSheet(); } },
     h('section', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
       h('header', { class: 'sheet-h' }, h('h2', {}, title), ib('x', 'Close', closeSheet)), body));
+  sheetWrap._title = title;
   build(body);
   app.append(sheetWrap);
-  const f = sheetWrap.querySelector('.sheet-b button, .sheet-b input'); f && f.focus({ preventScroll: true });
+  if (keepTop) body.scrollTop = keepTop;
+  const same = keepIdx >= 0 ? sheetWrap.querySelectorAll(SHEET_FOC)[keepIdx] : null;
+  const f = same || sheetWrap.querySelector('.sheet-b button, .sheet-b input'); f && f.focus({ preventScroll: true });
+  if (f && tvOn()) tvReveal(f);
 }
 
 /* ---------- Background picker ---------- */
+const BR_GREEN = 'radial-gradient(ellipse at 50% 28%,#2ba356,#17773c 70%,#11612f)';
+const BR_SOLIDS = ['#bfe6fb', '#c6e77e', '#ff94b8', '#ffd84d', '#b49cff', '#ffae5e', '#ffffff', '#1d1b33'];
 const SOLIDS = ['#ffffff', '#f6f3ea', '#fde2e4', '#fff1c1', '#dff5d6', '#d8f3f4', '#e6e1ff', '#2b2a3f', '#13324a', '#3b2c4f'];
 const GRADS = [
   'linear-gradient(135deg,#ffd6e0,#fff1c1)', 'linear-gradient(135deg,#c9f2e7,#d6e4ff)', 'linear-gradient(135deg,#e6e1ff,#ffd9f0)',
@@ -2736,6 +2916,10 @@ function openBackground() {
     const runQ = () => { const f = queue.shift(); if (f) { f(); setTimeout(runQ, 0); } };
     setTimeout(runQ, 60);
     body.append(
+      h('div', { class: 'sec' }, h('h3', {}, 'Bright'), h('div', { class: 'swatches big' },
+        Object.keys(SCENES).filter(k => SCENES[k][1] === 'bright').map(k => sw({ k: 'scene', v: k }, SCENES[k][0], '', { background: sceneCss(k, true) })),
+        sw({ k: 'grad', v: BR_GREEN }, 'Green board', '', { background: BR_GREEN })),
+        h('div', { class: 'swatches' }, BR_SOLIDS.map(c => sw({ k: 'solid', v: c }, '', '', { background: c })))),
       h('div', { class: 'sec' }, h('h3', {}, 'Real boards'), h('div', { class: 'swatches big' }, ['rgreen', 'rblack', 'rwhite', 'rcork'].map(rsw))),
       h('div', { class: 'sec' }, h('h3', {}, 'Real nature'), h('div', { class: 'swatches big' }, Object.keys(RBG).filter(k => RBG[k][1] === 'nature').map(rsw))),
       h('div', { class: 'sec' }, h('h3', {}, 'Simple boards'), h('div', { class: 'swatches big' },
@@ -2760,7 +2944,8 @@ function filePick(accept, onfile, label, cls = 'btn sm', id) {
 function openStickers() {
   sheet('Stickers', body => {
     body.append(h('p', { class: 'note' }, 'Tap a sticker to put it on the board. Drag it to move, use the corner to resize.'),
-      h('div', { class: 'stk-grid' }, Object.keys(STK).map(k => h('button', { type: 'button', 'aria-label': 'Add ' + k + ' sticker', html: stkSvg(k), onclick: () => { addSticker(k); closeSheet(); } }))));
+      ...STK_GROUPS.map(([name, keys]) => h('div', { class: 'sec' }, h('h3', { dir: 'auto' }, name),
+        h('div', { class: 'stk-grid' + (STK_WORDY.has(keys[0]) ? ' words' : '') }, keys.filter(k => STK[k]).map(k => h('button', { type: 'button', title: STK_NAME[k] || k, 'aria-label': 'Add sticker: ' + (STK_NAME[k] || k), html: stkSvg(k), onclick: () => { addSticker(k); closeSheet(); } }))))));
   });
 }
 
@@ -2779,13 +2964,16 @@ function openMenu(focusBoards) {
     body.append(
       h('div', { class: 'sec' }, h('h3', {}, 'Boards'), list,
         h('div', { class: 'row' },
-          btn('New board', () => { const nb = { id: uid(), name: 'Board ' + (S.boards.length + 1), bg: { k: 'grid' }, widgets: [] }; S.boards.push(nb); switchBoard(nb.id); openMenu(true); }, 'btn sm', 'plus'),
+          btn('New board', () => { const nb = { id: uid(), name: 'Board ' + (S.boards.length + 1), bg: S.look === 'soft' ? { k: 'grid' } : { k: 'scene', v: 'brhills' }, widgets: [] }; S.boards.push(nb); switchBoard(nb.id); openMenu(true); }, 'btn sm', 'plus'),
           S.boards.length > 1 ? confirmBtn('Delete this board', 'Tap again to delete', () => { const i = S.boards.indexOf(b); S.boards.splice(i, 1); b.widgets.forEach(w => { const d = T[w.type]; d && d.blobs && d.blobs(w.s).forEach(x => x && Blobs.del(x)); }); S.cur = S.boards[Math.max(0, i - 1)].id; save(); showBoard(); openMenu(true); }) : null),
         field('Board name', nameIn),
         h('div', { class: 'row' }, confirmBtn('Clear this board', 'Tap again to clear', () => { b.widgets.slice().forEach(w => { const r = live.get(w.id); r && unmount(r, true); }); b.widgets = []; save(); showBoard(); closeSheet(); toast('Board cleared'); }))),
       h('div', { class: 'sec' }, h('h3', {}, 'Display'),
+        field('Look', seg([['bright', 'Bright'], ['soft', 'Pastel']], S.look === 'soft' ? 'soft' : 'bright', v => { S.look = v; applyPrefs(); save(); openMenu(); }, 'Look')),
         APP ? field('Colours', seg([['auto', 'Match device'], ['light', 'Light'], ['dark', 'Dark']], S.theme, v => { S.theme = v; applyPrefs(); save(); openMenu(); }, 'Colours')) : null,
         field('Size of buttons and text', seg([['auto', 'Auto'], ['s', 'Small'], ['m', 'Medium'], ['l', 'Large'], ['xl', 'Extra large']], S.ui, v => { S.ui = v; applyPrefs(); save(); openMenu(); }, 'Size')),
+        field('TV remote control', seg([['auto', isTV ? 'Auto (on)' : 'Auto (off)'], ['on', 'On'], ['off', 'Off']], S.remote || 'auto', v => { S.remote = v; applyTV(); applyPrefs(); save(); openMenu(); }, 'TV remote control')),
+        tvOn() ? h('p', { class: 'note' }, 'Arrows move between buttons, OK presses, Back closes. On a tool’s name, press OK to move it, OK again to change its size.') : null,
         toggle('pref-sound', 'Sounds', !S.mute, v => { S.mute = !v; save(); }),
         toggle('pref-wake', 'Keep the screen awake', S.wake, v => { S.wake = v; save(); wake(); }),
         h('div', { class: 'row' }, btn('Full screen', () => { closeSheet(); goFull(); }, 'btn sm', 'fs'), btn('Save the board as a picture or PDF', () => openExport(), 'btn sm', 'download'))),
@@ -2810,6 +2998,7 @@ function installSection() {
     return sec;
   }
   if (standalone()) { sec.append(h('p', { class: 'note' }, 'Installed. VocaBoard opens from your home screen or apps list and works offline.')); return sec; }
+  if (isTV) { sec.append(h('p', { class: 'note' }, 'On a TV: TV browsers can’t install apps. In your TV browser, set this page as the home page or add a bookmark, so VocaBoard opens when you open the browser. Your boards are saved on the TV.')); return sec; }
   if (installEvt) sec.append(btn('Install VocaBoard', async () => { try { installEvt.prompt(); await installEvt.userChoice; } catch (e) {} installEvt = null; openMenu(); }, 'btn pri', 'install'));
   const ua = navigator.userAgent;
   const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -2848,7 +3037,9 @@ async function importData(file) {
 function applyPrefs() {
   const r = document.documentElement;
   if (APP) { if (S.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', S.theme); }
+  r.classList.toggle('soft', S.look === 'soft');
   let u = { s: .875, m: 1, l: 1.2, xl: 1.45 }[S.ui];
+  if (!u && tvOn()) u = innerWidth >= 1700 ? 1.45 : innerWidth >= 1200 ? 1.2 : 1; // TVs: big text only when the browser uses a large page width
   if (!u) { const big = Math.min(screen.width, screen.height) >= 1000 && matchMedia('(pointer: coarse)').matches; u = big ? 1.2 : 1; }
   r.style.setProperty('--u', u);
 }
@@ -5809,7 +6000,7 @@ async function boardCanvas(withBg = true) {
      .cap-root .stk.sel{outline:none}`;
   const html = document.documentElement, rs = getComputedStyle(html);
   const xml = new XMLSerializer().serializeToString(root);
-  const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W * scale)}" height="${Math.round(H * scale)}" viewBox="0 0 ${W} ${H}"${html.dataset.theme ? ` data-theme="${html.dataset.theme}"` : ''} style="font-size:${rs.fontSize};--u:${rs.getPropertyValue('--u') || 1}"><style><![CDATA[${css.replace(/\]\]>/g, '] ]>')}]]></style><foreignObject x="0" y="0" width="${W}" height="${H}">${xml}</foreignObject></svg>`;
+  const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W * scale)}" height="${Math.round(H * scale)}" viewBox="0 0 ${W} ${H}"${html.dataset.theme ? ` data-theme="${html.dataset.theme}"` : ''}${html.classList.contains('soft') ? ' class="soft"' : ''} style="font-size:${rs.fontSize};--u:${rs.getPropertyValue('--u') || 1}"><style><![CDATA[${css.replace(/\]\]>/g, '] ]>')}]]></style><foreignObject x="0" y="0" width="${W}" height="${H}">${xml}</foreignObject></svg>`;
   const img = new Image();
   await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('draw')); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr); });
   const cv = document.createElement('canvas'); cv.width = Math.round(W * scale); cv.height = Math.round(H * scale);
@@ -5867,6 +6058,248 @@ function openExport() {
   });
 }
 
+/* ---------- TV remote (Sony and other Google TV / Android TV sets, smart boards with a remote) ----------
+   Arrows move between buttons, OK presses, Back closes the top window.
+   On a tool's name (or a sticker), OK starts "move": arrows move it, OK again changes its size, Back finishes. */
+const TV_UA = /Android ?TV|Google ?TV|GoogleTV|BRAVIA|SmartTV|SMART-TV|Tizen|Web0S|webOS|NetCast|HbbTV|\bAFT[A-Z]{1,5}\b|CrKey|TV ?Bro|; ?TV[;)]/i;
+const isTV = (() => {
+  try {
+    if (TV_UA.test(navigator.userAgent || '')) return true;
+    // no mouse and no touch screen at all: only a remote or keyboard can drive the page
+    return !matchMedia('(any-pointer: fine)').matches && !matchMedia('(any-pointer: coarse)').matches && matchMedia('(any-pointer: none)').matches;
+  } catch (e) { return false; }
+})();
+const tvOn = () => !!S && (S.remote === 'on' || (S.remote !== 'off' && isTV));
+const TV_SEL = 'button:not([disabled]), a[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [contenteditable="true"], [tabindex]:not([tabindex="-1"])';
+const TV_DIR = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+
+function applyTV() {
+  const on = tvOn(), r = document.documentElement;
+  r.classList.toggle('tv', on);
+  document.querySelectorAll('.wg-t').forEach(t => { if (on) { t.tabIndex = 0; t.title = 'Press OK to move or resize this tool'; } else { t.removeAttribute('tabindex'); t.title = 'Double-tap to rename'; } });
+  if (on) tvGuard(); else tvUnguard();
+}
+function tvTitle(t) { if (tvOn()) { t.tabIndex = 0; t.title = 'Press OK to move or resize this tool'; } }
+
+/* the window or popup on top decides where the arrows can go */
+function tvScope() {
+  if (palEl) return palEl;
+  if (sheetWrap) return sheetWrap;
+  return app;
+}
+function scrollBox(el) {
+  for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+    const cs = getComputedStyle(p);
+    if ((/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1) || (/(auto|scroll)/.test(cs.overflowX) && p.scrollWidth > p.clientWidth + 1)) return p;
+  }
+  return null;
+}
+const onScreen = r => r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
+function tvReachable(el) {
+  if (el.closest('.dock-arrow, [aria-hidden="true"], [hidden], [inert]')) return false;
+  const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
+  if (getComputedStyle(el).visibility === 'hidden') return false;
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2, sb = scrollBox(el);
+  const inBox = sb ? (() => { const b = sb.getBoundingClientRect(); return cx >= b.left && cx <= b.right && cy >= b.top && cy <= b.bottom; })() : true;
+  if (!inBox) return onScreen(sb.getBoundingClientRect()); // scrolled out of sight: reachable when its box is on screen
+  if (cx < 0 || cy < 0 || cx > innerWidth || cy > innerHeight) return false;
+  const hit = document.elementFromPoint(cx, cy);
+  if (!hit) return false;
+  if (hit === el || el.contains(hit) || hit.contains(el)) return true;
+  // a decoration on top (a ring, a shadow) is fine; another tool or window on top is not
+  const box = n => n.closest('.wg, .stk, .sheet-wrap, .palpop, #dock, .top, .bigpop, #toast, #dockTab');
+  return box(hit) === box(el) && document.elementsFromPoint(cx, cy).includes(el);
+}
+function tvList(scope, not) { return [...scope.querySelectorAll(TV_SEL)].filter(e => e !== not && tvReachable(e)); }
+function tvReveal(el) {
+  for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+    const cs = getComputedStyle(p), m = 14;
+    const sy = /(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1, sx = /(auto|scroll)/.test(cs.overflowX) && p.scrollWidth > p.clientWidth + 1;
+    if (!sy && !sx) continue;
+    const pr = p.getBoundingClientRect(), er = el.getBoundingClientRect();
+    if (sy) { if (er.top < pr.top + m) p.scrollTop -= pr.top + m - er.top; else if (er.bottom > pr.bottom - m) p.scrollTop += Math.min(er.bottom - pr.bottom + m, er.top - pr.top - m); }
+    if (sx) { if (er.left < pr.left + m) p.scrollLeft -= pr.left + m - er.left; else if (er.right > pr.right - m) p.scrollLeft += Math.min(er.right - pr.right + m, er.left - pr.left - m); }
+  }
+}
+function tvFocus(el) {
+  if (!el) return;
+  document.documentElement.classList.add('kb');
+  try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+  tvReveal(el);
+  const it = el.closest && el.closest('.stk');
+  if (it && tvOn()) { document.querySelectorAll('.stk.sel').forEach(x => x !== it && x.classList.remove('sel')); it.classList.add('sel'); it.classList.toggle('below', it.getBoundingClientRect().top < 70); }
+}
+function tvFirst(scope, list) {
+  if (scope === sheetWrap) return list.find(e => e.closest('.sheet-b')) || list[0];
+  if (scope === palEl) return list.find(e => e.getAttribute('aria-pressed') === 'true') || list[0];
+  return list.find(e => e.closest('#dock')) || list[0];
+}
+// a switch is aimed at by its whole row, not just the little knob at the far right
+const geo = el => (el.closest('.switch') || el).getBoundingClientRect();
+function tvPick(cur, list, dir) {
+  const a = geo(cur), H = dir === 'left' || dir === 'right', fwd = dir === 'right' || dir === 'down';
+  const ca = H ? a.left + a.width / 2 : a.top + a.height / 2, co = H ? a.top + a.height / 2 : a.left + a.width / 2;
+  let best = null, bs = Infinity;
+  for (const e of list) {
+    if (e.contains(cur)) continue;
+    const b = geo(e);
+    const cb = H ? b.left + b.width / 2 : b.top + b.height / 2;
+    let d = dir === 'right' ? b.left - a.right : dir === 'left' ? a.left - b.right : dir === 'down' ? b.top - a.bottom : a.top - b.bottom, pen = 0;
+    if (d < -3) { // overlapping along the way we are going: only if it is clearly further on
+      const ahead = fwd ? cb - ca : ca - cb;
+      const far = fwd ? (H ? b.right - a.right : b.bottom - a.bottom) : (H ? a.left - b.left : a.top - b.top);
+      if (ahead < 8 || far < 8) continue;
+      d = 0; pen = 40;
+    }
+    d = Math.max(0, d);
+    const lo = H ? Math.max(a.top, b.top) : Math.max(a.left, b.left), hi = H ? Math.min(a.bottom, b.bottom) : Math.min(a.right, b.right);
+    const gap = Math.max(0, lo - hi), off = Math.abs(co - (H ? b.top + b.height / 2 : b.left + b.width / 2));
+    const sc = Math.hypot(d, gap) + gap * (H ? 4 : .3) + off * .08 + pen; // sideways: stay in the row; up and down: the nearest thing wins
+    if (sc < bs) { bs = sc; best = e; }
+  }
+  return best;
+}
+function tvMove(dir) {
+  const scope = tvScope(), cur = document.activeElement;
+  const list = tvList(scope, cur);
+  if (!cur || cur === document.body || !scope.contains(cur)) { const f = tvFirst(scope, list); if (f) { tvFocus(f); return true; } return false; }
+  const nx = tvPick(cur, list, dir);
+  if (nx) { tvFocus(nx); return true; }
+  // nothing further that way: scroll the box the focus is in, if it can scroll
+  const sb = scrollBox(cur);
+  if (sb && scope.contains(sb)) {
+    const k = .6, dy = dir === 'down' ? sb.clientHeight * k : dir === 'up' ? -sb.clientHeight * k : 0, dx = dir === 'right' ? sb.clientWidth * k : dir === 'left' ? -sb.clientWidth * k : 0;
+    const t0 = sb.scrollTop, l0 = sb.scrollLeft; sb.scrollTop += dy; sb.scrollLeft += dx;
+    if (sb.scrollTop !== t0 || sb.scrollLeft !== l0) return true;
+  }
+  return true; // stay put rather than letting the page scroll
+}
+function textish(t) {
+  if (!t || !t.tagName) return false;
+  if (t.isContentEditable || t.tagName === 'TEXTAREA') return true;
+  return t.tagName === 'INPUT' && /^(text|search|url|email|tel|password|number|)$/.test((t.getAttribute('type') || '').toLowerCase());
+}
+function caretAtEdge(t, dir) {
+  const back = dir === 'up' || dir === 'left';
+  if (t.isContentEditable) {
+    const sel = getSelection(); if (!sel.rangeCount || !t.contains(sel.anchorNode)) return true;
+    const r = sel.getRangeAt(0), x = document.createRange(); x.selectNodeContents(t);
+    if (back) x.setEnd(r.startContainer, r.startOffset); else x.setStart(r.endContainer, r.endOffset);
+    return x.toString().length === 0;
+  }
+  let s, e; try { s = t.selectionStart; e = t.selectionEnd; } catch (err) { return true; }
+  if (s == null) return true;
+  if (t.tagName === 'INPUT' && (dir === 'up' || dir === 'down')) return true;
+  const len = t.value.length;
+  return back ? s === 0 && e === 0 : s === len && e === len;
+}
+const isSlider = t => t && (t.getAttribute && t.getAttribute('role') === 'slider' || (t.tagName === 'INPUT' && t.type === 'range'));
+
+/* ---------- moving and resizing with the remote ---------- */
+let tvMv = null;
+function tvMoveStart(rec) {
+  if (!rec) return;
+  if (!rec.item && (isStack() || rec.el.classList.contains('max'))) { toast(rec.el.classList.contains('max') ? 'Press Back to make the tool smaller first.' : 'Tools can’t be moved on a narrow screen.'); return; }
+  if (!rec.item) front(rec); else { rec.wd.z = ++zTop; rec.el.style.zIndex = rec.wd.z; }
+  const tag = h('div', { class: 'tv-mv', 'aria-live': 'polite' });
+  rec.el.append(tag); rec.el.classList.add('tv-moving');
+  tvMv = { rec, mode: 'move', tag }; tvMvLabel();
+}
+function tvMvLabel() { if (tvMv) tvMv.tag.textContent = tvMv.mode === 'move' ? 'Move it with the arrows · OK: change the size · Back: done' : 'Change the size with the arrows · OK or Back: done'; }
+function tvMoveEnd() {
+  if (!tvMv) return;
+  const { rec, tag } = tvMv; tvMv = null;
+  tag.remove(); rec.el.classList.remove('tv-moving');
+  const { W, H } = boardSize();
+  if (rec.item) placeItem(rec);
+  else { rec.wd.x = rec.el.offsetLeft / W; rec.wd.y = rec.el.offsetTop / H; rec.wd.w = rec.el.offsetWidth; rec.wd.h = rec.el.offsetHeight; }
+  save();
+  tvFocus(rec.item ? rec.el : rec.title);
+}
+function tvMoveKey(e) {
+  const { rec } = tvMv, dir = TV_DIR[e.key];
+  e.preventDefault(); e.stopPropagation();
+  if (e.key === 'Enter' || e.key === ' ') { if (tvMv.mode === 'move') { tvMv.mode = 'size'; tvMvLabel(); } else tvMoveEnd(); return; }
+  if (!dir) { if (tvBackKey(e) || e.key === 'Escape') tvMoveEnd(); return; }
+  const { W, H } = boardSize(), st = Math.round(clamp(Math.min(W, H) * .04, 16, 60));
+  const dx = dir === 'left' ? -st : dir === 'right' ? st : 0, dy = dir === 'up' ? -st : dir === 'down' ? st : 0;
+  const { el, wd } = rec;
+  if (rec.item) {
+    if (tvMv.mode === 'move') { wd.x = clamp(wd.x + dx / W, 0, 1); wd.y = clamp(wd.y + dy / H, 0, 1); }
+    else if (wd.type === 'sticker') wd.s.size = clamp(wd.s.size + (dx || -dy), 48, 420);
+    else { wd.s.w = clamp(wd.s.w + dx, 30, 1400); wd.s.h = clamp(wd.s.h + dy, wd.s.k === 'line' ? 12 : 30, 1000); }
+    placeItem(rec); return;
+  }
+  if (tvMv.mode === 'move') { const p = clampPos(el.offsetLeft + dx, el.offsetTop + dy, el.offsetWidth, el.offsetHeight); el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; }
+  else { const def = T[wd.type]; el.style.width = clamp(el.offsetWidth + dx, def.minW || 180, W - el.offsetLeft) + 'px'; el.style.height = clamp(el.offsetHeight + dy, def.minH || 150, H - el.offsetTop) + 'px'; }
+}
+
+/* ---------- Back ---------- */
+function tvBackKey(e) { return e.key === 'GoBack' || e.key === 'BrowserBack' || e.keyCode === 461 || e.keyCode === 10009; }
+/* closes whatever is on top; false when nothing was open */
+function closeTop() {
+  if (tvMv) { tvMoveEnd(); return true; }
+  if (palEl) { closePal(); return true; }
+  const bp = app && app.querySelector('.bigpop'); if (bp) { bp.click(); return true; }
+  if (sheetWrap) { closeSheet(); return true; }
+  for (const r of live.values()) if (r.el && r.el.classList.contains('max')) { toggleMax(r); tvOn() && tvFocus(r.maxBtn); return true; }
+  return false;
+}
+/* TV browsers turn the remote's Back button into "go back a page". One extra history step keeps VocaBoard open:
+   Back closes the top window instead, and with nothing open it asks for a second press before leaving. */
+let tvG = false, tvGT = 0;
+function tvGuard() {
+  if (tvG || !tvOn() || !app) return;
+  const ua = navigator.userActivation; if (ua && !ua.hasBeenActive) return; // wait for the first button press
+  try { history.pushState({ vbtv: 1 }, '', location.href); tvG = true; } catch (e) {}
+}
+function tvUnguard() { if (!tvG) return; tvG = false; try { history.back(); } catch (e) {} }
+addEventListener('popstate', () => {
+  if (!tvG) return;
+  tvG = false;
+  if (closeTop()) { tvGuard(); return; }
+  toast('Press Back again to leave VocaBoard');
+  clearTimeout(tvGT); tvGT = setTimeout(tvGuard, 3000);
+});
+
+/* ---------- keys ---------- */
+function tvKeyCapture(e) {
+  if (!tvOn() || e.altKey || e.ctrlKey || e.metaKey || !app || !app.isConnected) return;
+  document.documentElement.classList.add('kb');
+  if (!tvG) tvGuard();
+  if (tvMv) { tvMoveKey(e); return; }
+  const t = e.target, k = e.key;
+  if (tvBackKey(e)) { if (closeTop()) { e.preventDefault(); e.stopPropagation(); } return; }
+  if (k === 'ContextMenu' && !sheetWrap) { e.preventDefault(); openMenu(); return; }
+  if (k === 'Enter') {
+    const bp = app.querySelector('.bigpop'); if (bp) { e.preventDefault(); e.stopPropagation(); bp.click(); return; }
+    if (t.classList && t.classList.contains('wg-t') && !t.isContentEditable) { e.preventDefault(); e.stopPropagation(); const w = t.closest('.wg'); tvMoveStart(w && live.get(w.dataset.id)); return; }
+    if (t.classList && t.classList.contains('stk') && e.target === t) { e.preventDefault(); e.stopPropagation(); tvMoveStart(live.get(t.dataset.id)); return; }
+    if (t.tagName === 'INPUT' && (t.type === 'checkbox' || t.type === 'radio')) { e.preventDefault(); t.click(); return; }
+    if (t.tagName === 'SELECT' || (t.tagName === 'INPUT' && /^(date|time|color|datetime-local|month|week)$/.test(t.type))) { try { t.showPicker(); e.preventDefault(); } catch (err) {} return; }
+    if (t.matches && t.matches('[role="button"]:not(button), .mm-item')) { e.preventDefault(); t.click(); }
+    return;
+  }
+  const dir = TV_DIR[k]; if (!dir) return;
+  if (textish(t)) { if (caretAtEdge(t, dir)) { e.preventDefault(); e.stopPropagation(); tvMove(dir); } return; }
+  if (t.tagName === 'SELECT' || (isSlider(t) && (dir === 'up' || dir === 'down'))) { e.preventDefault(); e.stopPropagation(); tvMove(dir); }
+  // other arrows go to the tool first (games, the timer dial); see tvKeyBubble
+}
+function tvKeyBubble(e) {
+  if (!tvOn() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+  const dir = TV_DIR[e.key]; if (!dir) return;
+  const t = e.target; if (isSlider(t) || textish(t) || t.tagName === 'SELECT') return; // the caret or the slider moves
+  if (tvMove(dir)) e.preventDefault();
+}
+function initTV() {
+  addEventListener('keydown', tvKeyCapture, true);
+  document.addEventListener('keydown', tvKeyBubble);
+  document.addEventListener('pointerdown', () => document.documentElement.classList.remove('kb'), true);
+  document.addEventListener('pointerdown', () => { if (!tvG) tvGuard(); });
+  applyTV();
+  if (tvOn() && !S.tvHint) { S.tvHint = 1; save(); setTimeout(() => toast('TV remote: the arrows move between buttons, OK presses, Back closes. On a tool’s name, press OK to move it.', { ms: 9000 }), 900); }
+}
+
 /* ---------- Shell ---------- */
 const DOCK = [
   ['timer', 'Timer'], ['vtimer', 'Visual timer'], ['stopwatch', 'Stopwatch'], ['speech', 'Speech timer'], ['clock', 'Clock'], ['calendar', 'Calendar'], ['countdown', 'Countdown'], ['timetable', 'Timetable'], '|',
@@ -5907,10 +6340,8 @@ function setDock(on) { S.dock = on; save(); dockEl.classList.toggle('hide', !on)
 function wireEvents() {
   let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(relayout, 80); });
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
-    if (palEl) { closePal(); return; }
-    if (sheetWrap) { closeSheet(); return; }
-    live.forEach(r => { if (r.el.classList.contains('max')) toggleMax(r); });
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    closeTop();
   });
   document.addEventListener('pointerdown', e => {
     if (!e.target.closest('.stk')) document.querySelectorAll('.stk.sel').forEach(x => x.classList.remove('sel'));
@@ -5947,6 +6378,7 @@ function start() {
   if (S.first) seedExample();
   showBoard();
   wireEvents();
+  initTV();
   wake();
   setInterval(() => { for (const f of tickers) { try { f(); } catch (e) { console.error(e); } } }, 100);
   if (APP && 'serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});

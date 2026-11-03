@@ -90,6 +90,7 @@ function live_(p) {
           if (p.t) it.t = String(p.t).slice(0, 300);
           if (p.c) it.c = String(p.c).slice(0, 12);
           if (p.n) it.n = String(p.n).slice(0, 40);
+          if (it.qid.charAt(0) === '{') { try { const x = JSON.parse(it.qid); if (x.t) it.t = String(x.t).slice(0, 300); if (Array.isArray(x.a)) it.t = x.a.join(' | ').slice(0, 300); if (x.n) it.n = String(x.n).slice(0, 40); } catch (err) {} } // posts from VocaBoard 1.4.2+ travel inside qid
           items.push(it);
           const json = JSON.stringify(items);
           if (items.length > 500 || Utilities.newBlob(json).getBytes().length > 95000) out = {ok:false, error:'full'}; // the memory holds up to 100 KB per activity
