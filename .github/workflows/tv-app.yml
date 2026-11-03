@@ -1,1 +1,402 @@
+# VocaBoard TV app: builds an Android app (APK) for Sony / Google TV, Android TV, Android smart boards and tablets.
+# Developed by: Ms. Amina Qatan
+# It runs by itself when this file is added or changed, or from the Actions tab > "Build VocaBoard TV app" > Run workflow.
+# The APK is then at: https://github.com/<you>/<repository>/releases/download/tv-app/VocaBoard-TV.apk
+name: Build VocaBoard TV app
 
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tv-app.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tv-app
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the website files
+        uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Write the app files
+        run: |
+          mkdir -p tvapp/src/com/aminaqatan/vocaboard tvapp/res/drawable-xhdpi tvapp/res/mipmap-xxxhdpi
+          cat > tvapp/AndroidManifest.xml <<'END_OF_MANIFEST'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.aminaqatan.vocaboard">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-feature android:name="android.software.leanback" android:required="false" />
+              <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+              <uses-feature android:name="android.hardware.camera" android:required="false" />
+              <uses-feature android:name="android.hardware.microphone" android:required="false" />
+              <application
+                  android:label="VocaBoard"
+                  android:icon="@mipmap/ic_launcher"
+                  android:banner="@drawable/banner"
+                  android:hardwareAccelerated="true"
+                  android:usesCleartextTraffic="false"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:launchMode="singleTask"
+                      android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                          <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          END_OF_MANIFEST
+          cat > tvapp/src/com/aminaqatan/vocaboard/MainActivity.java <<'END_OF_JAVA'
+          package com.aminaqatan.vocaboard;
+
+          import android.app.Activity;
+          import android.app.UiModeManager;
+          import android.content.ActivityNotFoundException;
+          import android.content.Intent;
+          import android.content.pm.PackageManager;
+          import android.content.res.Configuration;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.view.WindowManager;
+          import android.webkit.CookieManager;
+          import android.webkit.PermissionRequest;
+          import android.webkit.ValueCallback;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import java.util.ArrayList;
+
+          /* VocaBoard for Android TV, smart boards and tablets. Developed by: Ms. Amina Qatan
+             Opens the VocaBoard website full screen. The remote's Back button goes back inside VocaBoard
+             (closing the open window) before it leaves the app. */
+          public class MainActivity extends Activity {
+              private static final String HOME = "https://aminaqatan.github.io/VocaBoard-App/";
+              private static final String HOST = "aminaqatan.github.io";
+              private static final int PICK_FILE = 42, ASK_PERMISSION = 7;
+              private WebView web;
+              private ValueCallback<Uri[]> fileCallback;
+              private PermissionRequest pendingPermission;
+
+              @Override
+              protected void onCreate(Bundle state) {
+                  super.onCreate(state);
+                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                  web = new WebView(this);
+                  setContentView(web);
+
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setMediaPlaybackRequiresUserGesture(false);
+                  s.setUseWideViewPort(true);
+                  s.setLoadWithOverviewMode(true);
+                  s.setSupportZoom(false);
+                  s.setBuiltInZoomControls(false);
+                  // "SmartTV" tells VocaBoard to switch on the TV remote mode
+                  s.setUserAgentString(s.getUserAgentString() + (isTv() ? " SmartTV VocaBoardTV" : " VocaBoardApp"));
+
+                  CookieManager cookies = CookieManager.getInstance();
+                  cookies.setAcceptCookie(true);
+                  cookies.setAcceptThirdPartyCookies(web, true);
+
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override
+                      @SuppressWarnings("deprecation")
+                      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                          return openOutside(url);
+                      }
+                  });
+                  web.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
+                          if (fileCallback != null) fileCallback.onReceiveValue(null);
+                          fileCallback = callback;
+                          try {
+                              startActivityForResult(params.createIntent(), PICK_FILE);
+                              return true;
+                          } catch (ActivityNotFoundException e) {
+                              fileCallback = null;
+                              return false;
+                          }
+                      }
+
+                      @Override
+                      public void onPermissionRequest(PermissionRequest request) {
+                          askPermission(request);
+                      }
+                  });
+
+                  web.setFocusable(true);
+                  web.setFocusableInTouchMode(true);
+                  web.requestFocus();
+                  if (state != null) web.restoreState(state);
+                  if (web.getUrl() == null) web.loadUrl(HOME);
+              }
+
+              private boolean isTv() {
+                  UiModeManager ui = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+                  if (ui != null && ui.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) return true;
+                  return getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
+              }
+
+              /* VocaBoard and the student QR server stay inside the app; other websites open in a browser if the device has one */
+              private boolean openOutside(String url) {
+                  Uri u = Uri.parse(url);
+                  String scheme = u.getScheme() == null ? "" : u.getScheme().toLowerCase();
+                  String host = u.getHost() == null ? "" : u.getHost().toLowerCase();
+                  if (scheme.equals("blob") || scheme.equals("data") || scheme.equals("about") || scheme.equals("javascript")) return false;
+                  if ((scheme.equals("https") || scheme.equals("http"))
+                          && (host.equals(HOST) || host.endsWith("script.google.com") || host.endsWith("googleusercontent.com"))) return false;
+                  try {
+                      startActivity(new Intent(Intent.ACTION_VIEW, u));
+                      return true;
+                  } catch (ActivityNotFoundException e) {
+                      return !(scheme.equals("https") || scheme.equals("http")); // no browser: show the website here instead
+                  }
+              }
+
+              /* microphone and webcam tools: only VocaBoard itself may ask */
+              private void askPermission(PermissionRequest request) {
+                  Uri origin = request.getOrigin();
+                  if (origin == null || !HOST.equals(origin.getHost())) {
+                      request.deny();
+                      return;
+                  }
+                  ArrayList<String> need = new ArrayList<String>();
+                  for (String r : request.getResources()) {
+                      if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)) need.add(android.Manifest.permission.RECORD_AUDIO);
+                      if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)) need.add(android.Manifest.permission.CAMERA);
+                  }
+                  if (Build.VERSION.SDK_INT >= 23) {
+                      ArrayList<String> ask = new ArrayList<String>();
+                      for (String p : need) if (checkSelfPermission(p) != PackageManager.PERMISSION_GRANTED) ask.add(p);
+                      if (!ask.isEmpty()) {
+                          if (pendingPermission != null) pendingPermission.deny();
+                          pendingPermission = request;
+                          requestPermissions(ask.toArray(new String[0]), ASK_PERMISSION);
+                          return;
+                      }
+                  }
+                  request.grant(request.getResources());
+              }
+
+              @Override
+              public void onRequestPermissionsResult(int code, String[] permissions, int[] results) {
+                  if (code != ASK_PERMISSION || pendingPermission == null) return;
+                  boolean ok = results.length > 0;
+                  for (int r : results) if (r != PackageManager.PERMISSION_GRANTED) ok = false;
+                  if (ok) pendingPermission.grant(pendingPermission.getResources());
+                  else pendingPermission.deny();
+                  pendingPermission = null;
+              }
+
+              @Override
+              protected void onActivityResult(int code, int result, Intent data) {
+                  if (code == PICK_FILE) {
+                      if (fileCallback != null) fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result, data));
+                      fileCallback = null;
+                      return;
+                  }
+                  super.onActivityResult(code, result, data);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (web != null && web.canGoBack()) web.goBack();
+                  else super.onBackPressed();
+              }
+
+              @Override
+              protected void onPause() {
+                  super.onPause();
+                  if (web != null) web.onPause();
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  if (web != null) web.onResume();
+              }
+
+              @Override
+              protected void onSaveInstanceState(Bundle out) {
+                  super.onSaveInstanceState(out);
+                  if (web != null) web.saveState(out);
+              }
+
+              @Override
+              protected void onDestroy() {
+                  if (web != null) {
+                      web.destroy();
+                      web = null;
+                  }
+                  super.onDestroy();
+              }
+          }
+          END_OF_JAVA
+          base64 -d > tvapp/res/drawable-xhdpi/banner.png <<'END_OF_BANNER'
+          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
+          END_OF_BANNER
+          if [ -f icons/icon-192.png ]; then cp icons/icon-192.png tvapp/res/mipmap-xxxhdpi/ic_launcher.png; else cp tvapp/res/drawable-xhdpi/banner.png tvapp/res/mipmap-xxxhdpi/ic_launcher.png; fi
+
+      - name: Build the APK
+        run: |
+          set -euo pipefail
+          cd tvapp
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          install_sdk() { set +o pipefail; yes | "$SDKM" "$1" > /dev/null; set -o pipefail; }
+          JAR=""
+          for v in 35 36 34; do
+            if [ -f "$SDK/platforms/android-$v/android.jar" ]; then JAR="$SDK/platforms/android-$v/android.jar"; break; fi
+          done
+          if [ -z "$JAR" ]; then install_sdk "platforms;android-35"; JAR="$SDK/platforms/android-35/android.jar"; fi
+          BTV=$(ls -1 "$SDK/build-tools" 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+          if [ -z "$BTV" ]; then install_sdk "build-tools;35.0.0"; BTV=35.0.0; fi
+          BT="$SDK/build-tools/$BTV"
+          echo "Building with $JAR and build-tools $BTV"
+          N="${GITHUB_RUN_NUMBER:-1}"
+          rm -rf build out && mkdir -p build/flat build/gen build/obj build/dex out
+          "$BT/aapt2" compile --no-crunch -o build/flat res/drawable-xhdpi/banner.png
+          "$BT/aapt2" compile --no-crunch -o build/flat res/mipmap-xxxhdpi/ic_launcher.png
+          "$BT/aapt2" link -o build/base.apk -I "$JAR" --manifest AndroidManifest.xml --java build/gen \
+            --min-sdk-version 21 --target-sdk-version 34 --version-code "$N" --version-name "1.0.$N" build/flat/*.flat
+          javac -source 8 -target 8 -bootclasspath "$JAR" -Xlint:-options -encoding UTF-8 -d build/obj $(find src build/gen -name '*.java')
+          "$BT/d8" --release --min-api 21 --lib "$JAR" --output build/dex $(find build/obj -name '*.class')
+          cp build/base.apk build/unsigned.apk
+          (cd build/dex && zip -q -X ../unsigned.apk classes.dex)
+          "$BT/zipalign" -p -f 4 build/unsigned.apk build/aligned.apk
+          keytool -genkeypair -keystore build/key.jks -storepass vocaboard -keypass vocaboard -alias vocaboard \
+            -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VocaBoard, O=Ms. Amina Qatan" -noprompt
+          "$BT/apksigner" sign --ks build/key.jks --ks-pass pass:vocaboard --key-pass pass:vocaboard --ks-key-alias vocaboard \
+            --out out/VocaBoard-TV.apk build/aligned.apk
+          "$BT/apksigner" verify --verbose out/VocaBoard-TV.apk
+          ls -l out
+
+      - name: Publish the download link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view tv-app --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1 || gh release create tv-app --repo "$GITHUB_REPOSITORY" --title "VocaBoard TV app" --notes "VocaBoard for Sony / Google TV, Android TV, Android smart boards and tablets. Developed by: Ms. Amina Qatan. Download VocaBoard-TV.apk below."
+          gh release upload tv-app tvapp/out/VocaBoard-TV.apk --repo "$GITHUB_REPOSITORY" --clobber
+          echo "APK download link: https://github.com/$GITHUB_REPOSITORY/releases/download/tv-app/VocaBoard-TV.apk" >> "$GITHUB_STEP_SUMMARY"
