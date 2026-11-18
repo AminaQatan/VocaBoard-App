@@ -559,7 +559,7 @@ input[type="range"]{width:100%;accent-color:var(--focus)}
 .it-note .tape{position:absolute;top:-.55rem;left:50%;width:34%;height:1.1rem;transform:translateX(-50%) rotate(-2deg);background:rgba(255,255,255,.55);border:1px solid rgba(37,34,61,.12)}
 .note-tx{flex:1;min-width:0;outline:none;overflow:auto;font:500 clamp(14px,12cqw,64px)/1.15 "Caveat","Tajawal",cursive;color:var(--on-pastel);overflow-wrap:anywhere;cursor:text}
 .note-tx:empty::before{content:attr(data-ph);opacity:.5}
-.it-bar{position:absolute;left:50%;bottom:calc(100% + .55rem);transform:translateX(-50%);display:none;gap:.15rem;padding:.25rem;border-radius:999px;background:var(--card);border:2px solid var(--edge);box-shadow:var(--shadow-sm);white-space:nowrap;filter:none;z-index:2}
+.it-bar{position:absolute;left:50%;bottom:calc(100% + .55rem);transform:translateX(calc(-50% + var(--bx,0px)));display:none;gap:.15rem;padding:.25rem;border-radius:999px;background:var(--card);border:2px solid var(--edge);box-shadow:var(--shadow-sm);white-space:nowrap;filter:none;z-index:2}
 .stk.below .it-bar{bottom:auto;top:calc(100% + .7rem)}
 .stk.sel .it-bar{display:flex}
 .it-bar .ib{width:2.2rem;height:2.2rem}
@@ -657,7 +657,8 @@ input[type="range"]{width:100%;accent-color:var(--focus)}
 .wl-grid{overflow:auto;columns:13rem;column-gap:.55rem;padding:.1rem}
 .wl-post{--note:var(--butter);break-inside:avoid;margin:0 0 .55rem;padding:.65rem .7rem .4rem;border-radius:.9rem;border:2px solid var(--edge);background:var(--note);color:var(--on-pastel);display:grid;gap:.4rem}
 .wl-post[data-note="mint"]{--note:var(--mint)} .wl-post[data-note="pink"]{--note:var(--pink)} .wl-post[data-note="aqua"]{--note:var(--aqua)} .wl-post[data-note="lav"]{--note:var(--lav)} .wl-post[data-note="peach"]{--note:var(--peach)}
-.wl-post p{margin:0;font:500 1rem/1.35 var(--f-ui);white-space:pre-wrap;overflow-wrap:anywhere}
+.wl-post p,.wl-tx{margin:0;font:500 1rem/1.35 var(--f-ui);overflow-wrap:anywhere}
+.wl-post p,.wl-tx.plain{white-space:pre-wrap}
 .wl-post img{width:100%;border-radius:.5rem;display:block}
 .wl-post footer{display:flex;align-items:center;gap:.3rem}
 .wl-post footer .sp{flex:1}
@@ -1156,6 +1157,24 @@ html.tv .wg-t[tabindex]{border-radius:.4rem;padding:0 .2rem;cursor:move}
 .sw.look-swatch{display:grid;place-items:end start}
 .stk-grid.words{grid-template-columns:repeat(auto-fill,minmax(5.6rem,1fr))}
 
+/* ---------- v1.8: formatting in Text, sticky notes and Idea wall ---------- */
+.rt ul,.rt ol{margin:.15em 0;padding-inline-start:1.2em}
+.rt li{margin:.05em 0}
+.rt[data-al="center"] :is(ul,ol),.rt[data-al="right"] :is(ul,ol),.tx-ed[data-al="center"] :is(ul,ol),.tx-ed[data-al="right"] :is(ul,ol){list-style-position:inside;padding-inline-start:0}
+.rt[data-al="left"]{text-align:left} .rt[data-al="center"]{text-align:center} .rt[data-al="right"]{text-align:right}
+.rt span[style*="background"]{color:#1d1b33;border-radius:.2em;padding:0 .08em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.rt img[data-blob]{display:inline-block;vertical-align:middle;height:auto;max-width:100%;border-radius:.5rem;margin:.15em 0;cursor:pointer}
+.rt img[data-w="s"]{width:30%} .rt img[data-w="m"]{width:60%} .rt img[data-w="l"]{width:100%}
+.wl-ed{min-height:4.6rem;max-height:14rem;overflow:auto;padding:.5rem .6rem;border-radius:.7rem;background:rgba(255,255,255,.72);color:var(--on-pastel);font:500 1rem/1.35 var(--f-ui);outline:none;overflow-wrap:anywhere;cursor:text}
+.wl-ed:focus{box-shadow:0 0 0 3px var(--focus)}
+.wl-ed:empty::before{content:attr(data-ph);color:rgba(29,27,51,.55)}
+.wl-fmt{display:flex;flex-wrap:wrap;gap:.2rem}
+.wl-fmt .ib{width:2rem;height:2rem;border-radius:.6rem;background:rgba(255,255,255,.62);color:var(--on-pastel)}
+.wl-fmt .ib:hover{background:#fff}
+.wl-post.editing .wl-tx{background:rgba(255,255,255,.6);border-radius:.55rem;padding:.35rem .45rem;outline:none;box-shadow:0 0 0 2px var(--edge);cursor:text}
+.wl-post footer .ib[title="Done"]{opacity:1;background:rgba(255,255,255,.7)}
+.it-note .it-bar .ib svg{width:1.05rem;height:1.05rem}
+
 </style>
 </head>
 <body>
@@ -1267,6 +1286,8 @@ const U = {
   bold:`<path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z" stroke-width="2.4"/>`,
   ital:`<path d="M10 5h8M6 19h8M14 5l-4 14"/>`,
   under:`<path d="M7 4v7a5 5 0 0 0 10 0V4M5 20h14"/>`,
+  hilite:`<path d="M14.5 4.5l5 5-7.5 7.5h-5v-5z"/><path d="M9.5 12l2.5 2.5" opacity=".6"/><path d="M4 20h16" stroke="#ffd84d" stroke-width="3.4"/>`,
+  addpic:`<rect x="3" y="5" width="13" height="12" rx="2"/><circle cx="7.5" cy="9.5" r="1.4"/><path d="M3.5 15.5l4-4 3 3 1.5-1.5 3.5 3.5"/><path d="M19.5 9v8M15.5 13h8"/>`,
   alignl:`<path d="M4 6h16M4 10h10M4 14h16M4 18h10"/>`,
   alignc:`<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>`,
   alignr:`<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>`,
@@ -2330,7 +2351,7 @@ function mountItem(wd) {
   const rec = { wd, el, art, item: true, ticks: [], cleanups: [] };
   el.append(art);
   if (wd.type === 'note') {
-    const tx = h('div', { class: 'note-tx', contenteditable: 'true', spellcheck: 'true', dir: 'auto', 'data-ph': 'Write here…', html: cleanHtml(wd.s.html || '') });
+    const tx = h('div', { class: 'note-tx rt', contenteditable: 'true', spellcheck: 'true', dir: 'auto', 'data-ph': 'Write here…', 'data-al': wd.s.al || null, html: cleanHtml(wd.s.html || '') });
     tx.addEventListener('input', () => { wd.s.html = cleanHtml(tx.innerHTML); save(); });
     tx.addEventListener('paste', e => { const x = e.clipboardData && e.clipboardData.getData('text/plain'); if (x != null) { e.preventDefault(); document.execCommand('insertText', false, x); } });
     art.append(h('i', { class: 'tape', 'aria-hidden': 'true' }), tx); rec.tx = tx;
@@ -2343,7 +2364,8 @@ function mountItem(wd) {
     keep(ib('fill', 'Fill: outline, light, solid', () => { const S3 = ['line', 'fill', 'solid']; wd.s.style = S3[(S3.indexOf(wd.s.style || 'fill') + 1) % 3]; paintItem(rec); save(); })),
     keep(ib('rotate', 'Turn', () => { wd.s.r = ((wd.s.r || 0) + 15) % 360; placeItem(rec); save(); })));
   if (wd.type === 'note') {
-    bar.append(keep(h('button', { class: 'ib', type: 'button', title: 'Note colour', 'aria-label': 'Note colour', onclick: () => { wd.s.col = NOTE_COLS[(NOTE_COLS.indexOf(wd.s.col) + 1) % NOTE_COLS.length]; paintItem(rec); save(); } }, h('i', { class: 'cdot', style: { background: 'var(--note)' } }))));
+    bar.append(...rtTools(rec.tx, { save: () => { wd.s.html = cleanHtml(rec.tx.innerHTML); save(); }, note: () => wd.s.col, al: { get: () => wd.s.al, set: v => { wd.s.al = v; rec.tx.dataset.al = v; } } }));
+    bar.prepend(keep(h('button', { class: 'ib', type: 'button', title: 'Note colour', 'aria-label': 'Note colour', onclick: () => { wd.s.col = NOTE_COLS[(NOTE_COLS.indexOf(wd.s.col) + 1) % NOTE_COLS.length]; paintItem(rec); save(); } }, h('i', { class: 'cdot', style: { background: 'var(--note)' } }))));
     const mic = keep(ib('mic', 'Voice typing', () => {
       if (rec.voice) { rec.voice.stop(); return; }
       const lang = S.vlang || 'en-GB';
@@ -2362,7 +2384,7 @@ function mountItem(wd) {
     if (e.button > 0) return;
     const editing = wd.type === 'note' && e.target.closest('.note-tx') && el.classList.contains('sel');
     document.querySelectorAll('.stk.sel').forEach(x => x !== el && x.classList.remove('sel'));
-    el.classList.add('sel'); el.classList.toggle('below', el.getBoundingClientRect().top < 70);
+    el.classList.add('sel'); el.classList.toggle('below', el.getBoundingClientRect().top < 70); fitItemBar(el);
     wd.z = ++zTop; el.style.zIndex = wd.z;
     if (editing) return;
     e.preventDefault(); e.stopPropagation(); el.focus({ preventScroll: true });
@@ -2391,6 +2413,14 @@ function mountItem(wd) {
   });
   el.addEventListener('keydown', e => { if ((e.key === 'Delete' || e.key === 'Backspace') && !e.target.closest('.note-tx')) removeWidget(wd.id); });
 }
+/* keep a sticker's or note's button bar inside the screen */
+function fitItemBar(el) {
+  const bar = el.querySelector('.it-bar'); if (!bar) return;
+  bar.style.setProperty('--bx', '0px');
+  const r = bar.getBoundingClientRect(), W = (app && app.clientWidth) || innerWidth;
+  const dx = r.left < 6 ? 6 - r.left : r.right > W - 6 ? W - 6 - r.right : 0;
+  bar.style.setProperty('--bx', Math.round(dx) + 'px');
+}
 function addItem(type, s) {
   const b = board(), { W, H } = boardSize(), k = scaleK();
   const n = b.widgets.filter(isItem).length % 6;
@@ -2399,7 +2429,7 @@ function addItem(type, s) {
   b.widgets.push(wd); mountItem(wd); updateEmpty(); save();
   const rec = live.get(wd.id);
   document.querySelectorAll('.stk.sel').forEach(x => x.classList.remove('sel'));
-  rec.el.classList.add('sel');
+  rec.el.classList.add('sel'); fitItemBar(rec.el);
   Snd.play('pop');
   return rec;
 }
@@ -2953,7 +2983,7 @@ function openStickers() {
 let installEvt = null;
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 addEventListener('appinstalled', () => { installEvt = null; toast('VocaBoard is installed.'); });
-const standalone = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true;
+const standalone = () => /VocaBoard(TV|App)/.test(navigator.userAgent) || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true; // VocaBoard(TV|App): the Android app
 
 function openMenu(focusBoards) {
   sheet('VocaBoard', body => {
@@ -3686,18 +3716,63 @@ T.scoreboard = {
 const FONTS = [['lexend', 'Clear', 'var(--f-ui)'], ['andika', 'Early reader', '"Andika","Tajawal",system-ui,sans-serif'], ['fredoka', 'Rounded', 'var(--f-display)'], ['caveat', 'Handwriting', '"Caveat","Tajawal",cursive']];
 function cleanHtml(html) {
   const doc = new DOMParser().parseFromString('<div>' + String(html) + '</div>', 'text/html');
-  const OK = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'BR', 'DIV', 'P', 'SPAN', 'FONT', 'UL', 'OL', 'LI']);
+  const OK = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'BR', 'DIV', 'P', 'SPAN', 'FONT', 'UL', 'OL', 'LI', 'IMG']);
+  const COL = /^(#[0-9a-f]{3,8}|rgba?\([\d,\s.]+\)|[a-z]+)$/i, CLEAR = /^(transparent|rgba\(0,\s*0,\s*0,\s*0\))$/i;
   const walk = n => {
     [...n.children].forEach(el => {
       if (!OK.has(el.tagName)) { el.replaceWith(...el.childNodes); return walk(n); }
-      const col = el.getAttribute('color') || el.style.color;
+      if (el.tagName === 'IMG') { // only pictures kept on this device (Text tool), never outside links
+        const id = el.getAttribute('data-blob') || '', w = el.getAttribute('data-w') || 'm';
+        if (!/^b[a-z0-9]{4,40}$/i.test(id)) { el.remove(); return; }
+        [...el.attributes].forEach(a => el.removeAttribute(a.name));
+        el.setAttribute('data-blob', id); el.setAttribute('data-w', /^[sml]$/.test(w) ? w : 'm'); el.setAttribute('alt', '');
+        return;
+      }
+      const col = el.getAttribute('color') || el.style.color, bg = el.style.backgroundColor;
       [...el.attributes].forEach(a => el.removeAttribute(a.name));
-      if (col && /^(#[0-9a-f]{3,8}|rgb\([\d,\s.]+\)|[a-z]+)$/i.test(col)) el.style.color = col;
+      if (col && COL.test(col)) el.style.color = col;
+      if (bg && COL.test(bg) && !CLEAR.test(bg)) el.style.backgroundColor = bg; // highlighter
       walk(el);
     });
   };
   const root = doc.body.firstChild; walk(root); return root.innerHTML;
 }
+/* pictures inside text are stored on this device; this puts them back on screen */
+function showPics(root) { root.querySelectorAll('img[data-blob]').forEach(im => { if (im.src) return; Blobs.url(im.dataset.blob).then(u => { if (u) im.src = u; }); }); }
+const plainToHtml = t => String(t || '').replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])).replace(/\n/g, '<br>');
+
+/* ---------- shared text formatting: bold, bullets, alignment, highlighter (Text tool, sticky notes, Idea wall) ---------- */
+const AL3 = ['left', 'center', 'right'], AL_NAME = { left: 'left', center: 'in the middle', right: 'right' };
+const hiliteFor = note => note === 'butter' || note === 'peach' ? '#a6f07a' : '#ffe45c'; // green on yellow notes, yellow elsewhere
+function hiliteOn(ed) {
+  const sel = getSelection(); if (!sel.rangeCount) return false;
+  for (let n = sel.anchorNode && sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentNode : sel.anchorNode; n && n !== ed; n = n.parentNode)
+    if (n.style && n.style.backgroundColor && !/^(transparent|rgba\(0,\s*0,\s*0,\s*0\))$/.test(n.style.backgroundColor)) return true;
+  return false;
+}
+function rtCmd(ed, name, val) {
+  const sel = getSelection();
+  if (!sel.rangeCount || !ed.contains(sel.anchorNode)) { ed.focus(); const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); sel.removeAllRanges(); sel.addRange(r); }
+  try { document.execCommand(name, false, val); } catch (e) {}
+}
+/* buttons keep the text selected (no focus change) and never start a drag */
+const rtKeep = b => { b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); }); return b; };
+function rtTools(ed, o) {
+  // o: { save(), note() -> colour key, al: { get(), set(v) } | null, bold: true }
+  const done = () => o.save();
+  const hl = rtKeep(ib('hilite', 'Highlight the selected words', () => { rtCmd(ed, 'hiliteColor', hiliteOn(ed) ? 'transparent' : hiliteFor(o.note ? o.note() : '')); done(); }));
+  const out = [];
+  if (o.bold !== false) out.push(rtKeep(ib('bold', 'Bold', () => { rtCmd(ed, 'bold'); done(); })));
+  out.push(rtKeep(ib('list', 'Bullets', () => { rtCmd(ed, 'insertUnorderedList'); done(); })));
+  if (o.al) {
+    const b = rtKeep(ib('align' + (o.al.get() || 'left')[0], '', () => { const v = AL3[(AL3.indexOf(o.al.get() || 'left') + 1) % 3]; o.al.set(v); paint(); done(); }));
+    const paint = () => { const v = o.al.get() || 'left'; b.replaceChildren(svg('align' + v[0])); b.title = 'Text ' + AL_NAME[v] + ' (tap to change)'; b.setAttribute('aria-label', b.title); };
+    paint(); out.push(b);
+  }
+  out.push(hl);
+  return out;
+}
+
 function mediaEmpty(c, { icon, text, accept, onFile, url }) {
   const box = h('div', { class: 'empty' }, svg(icon, 'ico'), h('p', {}, text));
   const row = h('div', { class: 'row', style: { justifyContent: 'center' } });
@@ -3943,26 +4018,48 @@ function langBtn(get, set, keep) {
 }
 T.text = {
   title: 'Text', icon: 'text', w: 440, h: 260, sh: 280, minW: 200, minH: 140,
+  blobs: s => [...String(s.html || '').matchAll(/data-blob="(b[a-z0-9]+)"/gi)].map(m => m[1]),
   init: () => ({ html: '', font: 'lexend', size: 34, note: '', al: 'left', lang: 'en-GB' }),
   mount(c) {
     const s = c.s; s.lang = s.lang || 'en-GB';
     const applyNote = () => { if (s.note) c.el.dataset.note = s.note; else delete c.el.dataset.note; };
     applyNote();
-    const ed = h('div', { class: 'tx-ed', contenteditable: 'true', spellcheck: 'true', lang: s.lang.slice(0, 2), dir: 'auto', 'data-ph': 'Type here, or tap the microphone and speak…', 'data-al': s.al, html: cleanHtml(s.html) });
+    const ed = h('div', { class: 'tx-ed rt', contenteditable: 'true', spellcheck: 'true', lang: s.lang.slice(0, 2), dir: 'auto', 'data-ph': 'Type here, or tap the microphone and speak…', 'data-al': s.al, html: cleanHtml(s.html) });
     const font = () => { ed.style.fontFamily = (FONTS.find(f => f[0] === s.font) || FONTS[0])[2]; ed.style.fontSize = s.size + 'px'; };
-    font();
+    font(); showPics(ed);
     let t, ranges = [], chkT;
     const panel = h('div', { class: 'tx-chk', hidden: true, role: 'region', 'aria-label': 'Writing check' });
     const heard = h('div', { class: 'tx-heard', hidden: true });
     ed.addEventListener('input', () => { s.html = cleanHtml(ed.innerHTML); save(); if (!panel.hidden) { clearTimeout(chkT); chkT = setTimeout(runCheck, 600); } });
-    ed.addEventListener('paste', e => { const tx = e.clipboardData && e.clipboardData.getData('text/plain'); if (tx != null) { e.preventDefault(); document.execCommand('insertText', false, tx); } });
+    ed.addEventListener('paste', e => {
+      const f = e.clipboardData && [...(e.clipboardData.files || [])].find(x => /^image\//.test(x.type));
+      if (f) { e.preventDefault(); e.stopPropagation(); addPic(f); return; }
+      const tx = e.clipboardData && e.clipboardData.getData('text/plain'); if (tx != null) { e.preventDefault(); document.execCommand('insertText', false, tx); }
+    });
     const cmd = (name, val) => { ed.focus(); try { document.execCommand(name, false, val); } catch (e) {} s.html = cleanHtml(ed.innerHTML); save(); };
     const keep = el => { el.addEventListener('pointerdown', e => e.preventDefault()); return el; };
     const sel = h('select', { id: 'txf-' + c.wd.id, 'aria-label': 'Font', onchange: e => { s.font = e.target.value; save(); font(); } }, FONTS.map(f => h('option', { value: f[0], selected: f[0] === s.font }, f[1])));
     const cols = [['var(--ink)', 'Default'], ['#e5484d', 'Red'], ['#2f6fe4', 'Blue'], ['#1f9d55', 'Green'], ['#8e4ec6', 'Purple']];
     const notes = [['', 'var(--card)'], ['butter', 'var(--butter)'], ['mint', 'var(--mint)'], ['pink', 'var(--pink)'], ['aqua', 'var(--aqua)'], ['lav', 'var(--lav)']];
-    const AL = ['left', 'center', 'right'];
-    const alBtn = keep(ib('align' + s.al[0], 'Alignment', () => { s.al = AL[(AL.indexOf(s.al) + 1) % 3]; ed.dataset.al = s.al; alBtn.replaceChildren(svg('align' + s.al[0])); save(); }));
+    // left, middle and right, each its own button
+    const alBtns = AL3.map(v => keep(h('button', { class: 'ib', type: 'button', title: 'Text ' + AL_NAME[v], 'aria-label': 'Text ' + AL_NAME[v], 'aria-pressed': String(s.al === v), onclick: () => { s.al = v; ed.dataset.al = v; alBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(AL3[i] === v))); save(); } }, svg('align' + v[0]))));
+    const hlBtn = keep(ib('hilite', 'Highlight the selected words', () => { rtCmd(ed, 'hiliteColor', hiliteOn(ed) ? 'transparent' : hiliteFor(s.note)); s.html = cleanHtml(ed.innerHTML); save(); }));
+    /* pictures inside the text: kept on this device; tap a picture to change its size */
+    let picRange = null;
+    const keepRange = () => { const sl = getSelection(); picRange = sl.rangeCount && ed.contains(sl.anchorNode) ? sl.getRangeAt(0).cloneRange() : null; };
+    async function addPic(f) {
+      const id = await Blobs.put(f), im = h('img', { 'data-blob': id, 'data-w': 'm', alt: '' });
+      const sl = getSelection(); let r = picRange;
+      if (!r && sl.rangeCount && ed.contains(sl.anchorNode)) r = sl.getRangeAt(0);
+      if (r && ed.contains(r.startContainer)) { r.deleteContents(); r.insertNode(im); r.setStartAfter(im); r.collapse(true); sl.removeAllRanges(); sl.addRange(r); }
+      else ed.append(im);
+      picRange = null; showPics(ed); s.html = cleanHtml(ed.innerHTML); save(); Snd.play('pop');
+      if (!S.picTip) { S.picTip = 1; save(); toast('Tap the picture to make it smaller or bigger. To remove it, tap just after it and press Delete.', { ms: 7000 }); }
+    }
+    const picIn = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: e => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) addPic(f); } });
+    const picBtn = ib('addpic', 'Insert a picture', () => picIn.click());
+    picBtn.addEventListener('pointerdown', keepRange, true);
+    c.on(ed, 'click', e => { const im = e.target.closest && e.target.closest('img[data-blob]'); if (!im) return; const W3 = ['s', 'm', 'l']; im.dataset.w = W3[(W3.indexOf(im.dataset.w) + 1) % 3]; s.html = cleanHtml(ed.innerHTML); save(); });
     /* writing check */
     function clearHL() { if (HL) ranges.forEach(r => HL.delete(r)); ranges = []; }
     function runCheck() {
@@ -4005,7 +4102,7 @@ T.text = {
       keep(ib('sizeup', 'Bigger text', () => { s.size = Math.min(160, s.size + 4); font(); save(); })),
       h('i', { class: 'vsep' }),
       keep(ib('bold', 'Bold', () => cmd('bold'))), keep(ib('ital', 'Italic', () => cmd('italic'))), keep(ib('under', 'Underline', () => cmd('underline'))),
-      keep(ib('list', 'Bulleted list', () => cmd('insertUnorderedList'))), alBtn,
+      keep(ib('list', 'Bullets', () => cmd('insertUnorderedList'))), ...alBtns, hlBtn, picBtn, picIn,
       h('i', { class: 'vsep' }),
       ...cols.map(([v, n]) => keep(h('button', { class: 'dot', type: 'button', title: n === 'Default' ? 'Clear formatting' : n + ' text', 'aria-label': n === 'Default' ? 'Clear formatting' : n + ' text', style: { background: v }, onclick: () => n === 'Default' ? cmd('removeFormat') : cmd('foreColor', v) }))),
       h('i', { class: 'vsep' }),
@@ -4389,19 +4486,22 @@ T.wall = {
       fresh.forEach(p => { const el = postEl(p); el.classList.add('fresh'); after ? after.after(el) : grid.prepend(el); });
     });
     const q = h('div', { class: 'wl-q', contenteditable: 'true', spellcheck: 'true', dir: 'auto', 'data-ph': 'Ask a question', oninput: e => { s.q = e.target.textContent; save(); lv.sync(); } }, s.q);
-    let draft = null;
+    let draft = null, wallEditing = null;
     const composer = () => {
       const col = { v: WALL_COLS[s.posts.length % WALL_COLS.length] }; let img = null;
-      const ta = h('textarea', { class: 'inp', id: 'wlt-' + c.wd.id, rows: 3, dir: 'auto', placeholder: 'Write your idea…', 'aria-label': 'Post text' });
+      const al = { v: '' };
+      const ta = h('div', { class: 'wl-ed rt', id: 'wlt-' + c.wd.id, contenteditable: 'true', spellcheck: 'true', dir: 'auto', role: 'textbox', 'aria-multiline': 'true', 'data-ph': 'Write your idea…', 'aria-label': 'Post text' });
+      ta.addEventListener('paste', e => { const tx = e.clipboardData && e.clipboardData.getData('text/plain'); if (tx != null) { e.preventDefault(); document.execCommand('insertText', false, tx); } });
+      const fmt = h('div', { class: 'wl-fmt' }, rtTools(ta, { save: () => {}, note: () => col.v, al: { get: () => al.v, set: v => { al.v = v; ta.dataset.al = v; } } }));
       const dots = h('div', { class: 'chips' }, WALL_COLS.map(k => h('button', { class: 'chip', type: 'button', 'aria-label': k, 'aria-pressed': String(k === col.v), style: { background: `var(--${k})`, width: '2.1rem', padding: 0 }, onclick: e => { col.v = k; dots.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === e.currentTarget))); card.dataset.note = k; } })));
       const pv = h('span', { class: 'note' });
       const mic = ib('mic', 'Voice typing', () => {
         if (draft.voice) { draft.voice.stop(); return; }
-        draft.voice = startVoice(S.vlang || 'en-GB', (t, fin) => { if (fin) { ta.value += (ta.value && !/\s$/.test(ta.value) ? ' ' : '') + t.trim(); } }, () => { draft.voice = null; mic.classList.remove('live'); });
+        draft.voice = startVoice(S.vlang || 'en-GB', (t, fin) => { if (fin) { ta.focus(); const sl = getSelection(); if (!ta.contains(sl.anchorNode)) { sl.selectAllChildren(ta); sl.collapseToEnd(); } document.execCommand('insertText', false, (ta.textContent && !/\s$/.test(ta.textContent) ? ' ' : '') + t.trim()); } }, () => { draft.voice = null; mic.classList.remove('live'); });
         if (draft.voice) mic.classList.add('live');
       }, 'btn sm ic');
-      const card = h('div', { class: 'wl-post wl-new', 'data-note': col.v }, ta, dots, h('div', { class: 'row' }, filePick('image/*', async f => { img = await Blobs.put(f); pv.textContent = f.name; }, 'Picture', 'btn sm'), mic, pv),
-        h('div', { class: 'row' }, btn('Post', () => { const t = ta.value.trim(); if (!t && !img) { ta.focus(); return; } s.posts.unshift({ id: uid(), t, c: col.v, likes: 0, img }); draft.voice && draft.voice.stop(); draft = null; save(); Snd.play('pop'); draw(); }, 'btn pri sm'), btn('Cancel', () => { draft.voice && draft.voice.stop(); if (img) Blobs.del(img); draft = null; draw(); }, 'btn sm')));
+      const card = h('div', { class: 'wl-post wl-new', 'data-note': col.v }, fmt, ta, dots, h('div', { class: 'row' }, filePick('image/*', async f => { img = await Blobs.put(f); pv.textContent = f.name; }, 'Picture', 'btn sm'), mic, pv),
+        h('div', { class: 'row' }, btn('Post', () => { const t = ta.innerText.trim(), html = cleanHtml(ta.innerHTML); if (!t && !img) { ta.focus(); return; } s.posts.unshift({ id: uid(), t, html: t ? html : '', al: al.v || undefined, c: col.v, likes: 0, img }); draft.voice && draft.voice.stop(); draft = null; save(); Snd.play('pop'); draw(); }, 'btn pri sm'), btn('Cancel', () => { draft.voice && draft.voice.stop(); if (img) Blobs.del(img); draft = null; draw(); }, 'btn sm')));
       draft = { card }; setTimeout(() => ta.focus(), 30);
       return card;
     };
@@ -4409,8 +4509,36 @@ T.wall = {
       const im = p.img ? h('img', { alt: '' }) : null; if (im) Blobs.url(p.img).then(u => { if (u) im.src = u; else im.remove(); });
       const like = h('button', { class: 'wl-like', type: 'button', 'aria-label': 'Like' }, svg('heartsm'), h('span', {}, String(p.likes || 0)));
       like.onclick = () => { p.likes = (p.likes || 0) + 1; save(); like.lastChild.textContent = p.likes; like.classList.remove('bump'); void like.offsetWidth; like.classList.add('bump'); Snd.play('pop'); };
-      return h('article', { class: 'wl-post', 'data-note': p.c }, im, p.t ? h('p', { dir: 'auto' }, p.t) : null,
-        h('footer', {}, like, p.n ? h('span', { class: 'wl-by', dir: 'auto' }, p.n) : null, h('span', { class: 'sp' }), ib('x', 'Delete post', () => { const i = s.posts.indexOf(p); s.posts.splice(i, 1); save(); draw(); let undone = false; toast('Post deleted', { action: ['Undo', () => { undone = true; s.posts.splice(i, 0, p); save(); draw(); }], done: () => { if (!undone && p.img) Blobs.del(p.img); } }); })));
+      const tx = (p.t || p.html) ? h('div', { class: 'wl-tx rt' + (p.html ? '' : ' plain'), dir: 'auto', 'data-al': p.al || null }) : null;
+      if (tx) { if (p.html) tx.innerHTML = cleanHtml(p.html); else tx.textContent = p.t; }
+      const art = h('article', { class: 'wl-post', 'data-note': p.c });
+      /* edit a post (also students' posts): bold, bullets, alignment, highlighter */
+      const edBtn = ib('edit', 'Edit or highlight this post', () => {
+        if (art.classList.contains('editing')) { finish(); return; }
+        if (wallEditing && wallEditing !== finish) wallEditing();
+        let box = art.querySelector('.wl-tx');
+        if (!box) { box = h('div', { class: 'wl-tx rt', dir: 'auto' }); art.insertBefore(box, art.querySelector('footer')); }
+        if (!p.html) box.innerHTML = plainToHtml(p.t);
+        box.classList.remove('plain'); box.contentEditable = 'true'; box.spellcheck = true;
+        const fm = h('div', { class: 'wl-fmt' }, rtTools(box, { save: keepEdit, note: () => p.c, al: { get: () => p.al, set: v => { p.al = v; box.dataset.al = v; } } }));
+        art.insertBefore(fm, box); art.classList.add('editing');
+        edBtn.replaceChildren(svg('check')); edBtn.title = 'Done'; edBtn.setAttribute('aria-label', 'Done');
+        box.addEventListener('input', keepEdit);
+        wallEditing = finish;
+        setTimeout(() => { box.focus(); const sl = getSelection(); sl.selectAllChildren(box); sl.collapseToEnd(); }, 20);
+        function keepEdit() { p.html = cleanHtml(box.innerHTML); p.t = box.innerText.trim(); save(); }
+      });
+      function finish() {
+        const box = art.querySelector('.wl-tx'), fm = art.querySelector('.wl-fmt');
+        if (box) { box.contentEditable = 'false'; p.html = cleanHtml(box.innerHTML); p.t = box.innerText.trim(); if (!p.t && !p.img) p.html = ''; }
+        if (fm) fm.remove();
+        art.classList.remove('editing'); edBtn.replaceChildren(svg('edit')); edBtn.title = 'Edit or highlight this post'; edBtn.setAttribute('aria-label', edBtn.title);
+        if (wallEditing === finish) wallEditing = null;
+        save();
+      }
+      [im, tx,
+        h('footer', {}, like, p.n ? h('span', { class: 'wl-by', dir: 'auto' }, p.n) : null, h('span', { class: 'sp' }), edBtn, ib('x', 'Delete post', () => { const i = s.posts.indexOf(p); s.posts.splice(i, 1); save(); draw(); let undone = false; toast('Post deleted', { action: ['Undo', () => { undone = true; s.posts.splice(i, 0, p); save(); draw(); }], done: () => { if (!undone && p.img) Blobs.del(p.img); } }); }))].forEach(x => x && art.append(x));
+      return art;
     }
     function draw() {
       grid.replaceChildren(...(draft ? [draft.card] : []), ...s.posts.map(postEl));
