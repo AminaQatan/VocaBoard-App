@@ -1175,89 +1175,6 @@ html.tv .wg-t[tabindex]{border-radius:.4rem;padding:0 .2rem;cursor:move}
 .wl-post footer .ib[title="Done"]{opacity:1;background:rgba(255,255,255,.7)}
 .it-note .it-bar .ib svg{width:1.05rem;height:1.05rem}
 
-/* ---------- v1.9: Picture dictionary ---------- */
-.pd{--pdc:8.6rem;--pde:3.6rem;display:flex;flex-direction:column;gap:.55rem;height:100%;min-height:0}
-.pd.pd-s{--pdc:6.6rem;--pde:2.7rem} .pd.pd-l{--pdc:11.5rem;--pde:5rem}
-.pd-tabs{display:flex;gap:.35rem;overflow-x:auto;padding:.1rem .1rem .35rem;scrollbar-width:thin;flex:none}
-.pd-tab{flex:none;display:flex;align-items:center;gap:.35rem;border:2px solid var(--edge);border-radius:999px;background:var(--card);color:var(--ink);font:600 .85rem var(--f-ui);padding:.3rem .75rem .3rem .45rem;cursor:pointer;white-space:nowrap}
-.pd-tab[aria-selected="true"]{background:var(--butter);color:var(--on-pastel)}
-.pd-ti,.pd-emo,.pd-plus{font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;font-weight:400;line-height:1}
-.pd-ti{font-size:1.15rem}
-.pd-bar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;flex:none}
-.pd-search{flex:1 1 9rem;min-width:0;max-width:18rem}
-.pd-modes{margin-inline-start:auto}
-.pd-main{position:relative;flex:1;min-height:0}
-.pd-scroll{position:absolute;inset:0;overflow:auto;padding:.15rem}
-.pd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--pdc),1fr));gap:.6rem}
-.pd-cw{position:relative;display:grid}
-.pd-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;min-height:calc(var(--pdc) * 1.05);padding:.6rem .4rem;border:2px solid var(--edge);border-radius:1rem;background:var(--card);color:var(--ink);cursor:pointer;transition:transform .12s}
-.pd-card:hover{transform:translateY(-2px)}
-.pd-card:active{transform:scale(.97)}
-.pd-p{display:grid;place-items:center;height:calc(var(--pde) * 1.15)}
-.pd-emo{font-size:var(--pde)}
-.pd-sw{display:block;width:calc(var(--pde) * 1.05);height:calc(var(--pde) * 1.05);border-radius:50%;border:3px solid var(--edge)}
-.pd-shape{display:block;width:calc(var(--pde) * 1.15);height:calc(var(--pde) * 1.15)}
-.pd-shape svg{width:100%;height:100%}
-.pd-img{width:calc(var(--pde) * 1.5);height:calc(var(--pde) * 1.15);object-fit:cover;border-radius:.6rem;border:2px solid var(--edge);background:var(--card-2)}
-.pd-w{font:700 calc(var(--pde) * .3 + .45rem)/1.15 var(--f-ui);text-align:center;overflow-wrap:anywhere}
-.pd-card.hid .pd-w{display:inline-grid;place-items:center;min-width:2.2em;border-radius:.5rem;background:var(--card-2);color:var(--ink-soft)}
-.pd-add{border-style:dashed;background:transparent}
-.pd-plus{font:700 calc(var(--pde) * .9)/1 var(--f-ui);color:var(--ink-soft)}
-.pd-del{position:absolute;top:.25rem;right:.25rem;width:1.8rem;height:1.8rem;background:var(--card);border:2px solid var(--edge);border-radius:50%}
-.pd-hint{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.5rem;color:var(--ink-soft);font-weight:500}
-.pd-count{margin:.7rem 0 0;color:var(--ink-soft);font-size:.85rem;text-align:center}
-.pd-focus{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;padding:1rem;background:var(--card)}
-.pd-focus .pd-emo{font-size:clamp(4rem,30cqh,11rem)}
-.pd-main{container-type:size}
-.pd-fp{display:grid;place-items:center}
-.pd-fp .pd-sw,.pd-fp .pd-shape{width:clamp(6rem,32cqh,12rem);height:clamp(6rem,32cqh,12rem)}
-.pd-fp .pd-img{width:auto;height:clamp(7rem,40cqh,16rem);max-width:90cqw}
-.pd-fw{font:700 clamp(2rem,9cqh,4.4rem)/1.1 var(--f-display);letter-spacing:.02em;text-align:center;overflow-wrap:anywhere}
-.pd-fw span{border-radius:.3rem;transition:background .15s,color .15s}
-.pd-fw span.on{background:var(--butter);color:var(--on-pastel)}
-.pd-fbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;align-items:center}
-.pd-close{position:absolute;top:.4rem;right:.4rem}
-.pd-qhead{margin-bottom:.6rem}
-.pd-qprog{display:flex;justify-content:space-between;font-weight:600;color:var(--ink-soft);margin-bottom:.4rem}
-.pd-qask{display:grid;place-items:center;min-height:30%;margin-bottom:.7rem}
-.pd-qpic .pd-emo{font-size:clamp(4rem,26cqh,9rem)}
-.pd-qpic .pd-sw,.pd-qpic .pd-shape{width:clamp(5rem,26cqh,9rem);height:clamp(5rem,26cqh,9rem)}
-.pd-qpic .pd-img{width:auto;height:clamp(6rem,30cqh,12rem)}
-.btn.pd-big{font-size:1.15rem;padding:.8rem 1.4rem}
-.pd-qopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.6rem}
-.pd-qopts.pics{grid-template-columns:repeat(auto-fit,minmax(var(--pdc),1fr))}
-.pd-qo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;min-height:3.4rem;padding:.6rem;border:2px solid var(--edge);border-radius:1rem;background:var(--card);color:var(--ink);font:700 1.15rem var(--f-ui);cursor:pointer}
-.pd-qo:disabled{cursor:default;opacity:1}
-.pd-qo.ok{background:var(--mint);color:var(--on-pastel)}
-.pd-qo.no{background:var(--pink);color:var(--on-pastel);animation:pdshake .35s}
-@keyframes pdshake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.pd-qend{display:grid;place-items:center;gap:.6rem;text-align:center;padding:1.5rem}
-.pd-qend b{font:700 1.6rem var(--f-display)}
-.pd-qend p{margin:0;color:var(--ink-soft)}
-.pd-addf{max-width:30rem}
-.pd-prev{display:grid;place-items:center;min-height:6rem;border:2px dashed var(--edge);border-radius:.8rem;margin-bottom:.4rem;padding:.5rem}
-.pd-prev .pd-img{width:auto;height:7rem}
-@media (prefers-reduced-motion: reduce){.pd-card,.pd-qo.no{transition:none;animation:none}}
-/* v1.9.1: real photos in the Picture dictionary */
-.pd-pics{margin-inline-start:auto}
-.pd-pics + .pd-modes{margin-inline-start:0}
-.pd-photo{display:block;width:calc(var(--pde) * 1.95);max-width:100%;height:calc(var(--pde) * 1.35);object-fit:cover;border-radius:.7rem;border:2px solid var(--edge);background:var(--card-2)}
-.pd-card:has(.pd-photo){padding-top:.45rem}
-.pd-p:has(.pd-photo){height:auto}
-.pd-wait{opacity:.55}
-.pd-src{font-size:.72rem;font-weight:600;color:var(--ink-soft)}
-.pd-online{border-style:dashed}
-.pd-fp .pd-photo,.pd-qpic .pd-photo{width:auto;max-width:92cqw;height:clamp(8rem,44cqh,20rem);object-fit:contain;background:transparent;border-radius:1rem}
-.pd-qopts.pics .pd-photo{width:100%;height:calc(var(--pde) * 1.6)}
-.pd-credit{font-size:.75rem;color:var(--ink-soft);margin-top:-.5rem}
-.pd-pick{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;gap:.7rem;padding:1rem;background:var(--card);overflow:auto}
-.pd-phead{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-size:1.05rem}
-.pd-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));gap:.6rem}
-.pd-popt{padding:0;border:2px solid var(--edge);border-radius:.8rem;overflow:hidden;background:var(--card-2);cursor:pointer;aspect-ratio:4/3}
-.pd-popt img{width:100%;height:100%;object-fit:cover;display:block}
-.pd-popt:hover{outline:3px solid var(--pri);outline-offset:2px}
-.pd-lg{text-decoration:none;white-space:nowrap;flex:none}
-.pd-lg svg{width:1rem;height:1rem}
 
 </style>
 </head>
@@ -1310,7 +1227,6 @@ const I = {
   calc:`<rect class="f-card" x="9" y="4" width="30" height="40" rx="6"/><rect class="f-aqua" x="14" y="9" width="20" height="9" rx="2.5" stroke-width="2.4"/><path d="M16 25h.01M24 25h.01M32 25h.01M16 31.5h.01M24 31.5h.01M16 38h.01M24 38h.01" stroke-width="3.8"/><rect class="f-pink" x="29.5" y="29.5" width="5" height="10.5" rx="2" stroke-width="2.4"/>`,
   tongue:`<path class="f-card" d="M7 21c0-9 7.6-15 17-15s17 6 17 15-7.6 16-17 16S7 30 7 21z"/><path class="f-ink" d="M14 20c3 6.5 17 6.5 20 0z" stroke-width="2.4"/><path class="f-pink" d="M19.5 24.5c0 6 2 10 4.5 10s4.5-4 4.5-10z" stroke-width="2.4"/><path d="M3 41l4-3M9 44l2-4M45 41l-4-3M39 44l-2-4"/>`,
   family:`<rect class="f-butter" x="15" y="4" width="18" height="10" rx="3"/><path d="M24 14v6M9 20h30M9 20v5M24 20v5M39 20v5"/><rect class="f-lav" x="3" y="25" width="12" height="9" rx="2.5" stroke-width="2.4"/><rect class="f-mint" x="18" y="25" width="12" height="9" rx="2.5" stroke-width="2.4"/><rect class="f-pink" x="33" y="25" width="12" height="9" rx="2.5" stroke-width="2.4"/><path d="M9 34v4M24 34v4M39 34v4M5.5 42h7M20.5 42h7M35.5 42h7" stroke-width="2.4"/>`,
-  picdict:`<path class="f-card" d="M6 10q9-4 18 1q9-5 18-1v30q-9-4-18 1q-9-5-18-1z"/><path d="M24 11v30"/><circle class="f-butter" cx="14.5" cy="18.5" r="3.5"/><path class="f-mint" d="M9 33l6-7 6 6v5q-6-2-12 0z" stroke-width="2.5"/><path class="f-pink" d="M30 21q2.5-3 5 0q2.5-3 5 0q0 5-5 8q-5-3-5-8z" stroke-width="2.5"/><path d="M29 33h9" stroke-width="2.5"/>`,
   dict:`<path class="f-card" d="M9 7a4 4 0 0 1 4-4h24v35H13a4 4 0 0 0-4 4z"/><path class="f-aqua" d="M9 42a4 4 0 0 1 4-4h24v6H13a4 4 0 0 1-4-2z"/><path d="M15 26l5-14 5 14M16.8 21.5h6.4"/><circle class="f-butter" cx="33.5" cy="31" r="6.5"/><path d="M38.2 35.7L44 41.5"/>`,
   mindmap:`<path d="M24 24L9 11M24 24l15-13M24 24L9 37M24 24l15 13"/><circle class="f-lav" cx="9" cy="11" r="5" stroke-width="2.4"/><circle class="f-mint" cx="39" cy="11" r="5" stroke-width="2.4"/><circle class="f-pink" cx="9" cy="37" r="5" stroke-width="2.4"/><circle class="f-aqua" cx="39" cy="37" r="5" stroke-width="2.4"/><rect class="f-butter" x="15" y="18" width="18" height="12" rx="6"/>`,
   exit:`<path class="f-card" d="M5 13a3 3 0 0 1 3-3h32a3 3 0 0 1 3 3v6a5 5 0 0 0 0 10v6a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-6a5 5 0 0 0 0-10z"/><path d="M31 10v28" stroke-dasharray="2.5 3"/><path class="f-mint" d="M12 25.5l3.5 3.5 7-7.5" fill="none"/><circle class="f-butter" cx="37.5" cy="24" r="2.6" stroke-width="2.2"/>`,
@@ -5759,20 +5675,6 @@ T.dict = {
   },
 };
 
-/* ---------- Picture dictionary: the tool bar button opens LanGeek's English Picture Dictionary (15,000+ pictures) ----------
-   The teacher's chosen website. (The earlier built-in picture dictionary is kept in w-pic.js, not used.) */
-const PD_LANGEEK = 'https://dictionary.langeek.co/en';
-function openPicDict() { const a = h('a', { href: PD_LANGEEK, target: '_blank', rel: 'noopener' }); document.body.append(a); a.click(); a.remove(); }
-T.picdict = { // boards saved with the earlier version show a button to the website instead
-  title: 'Picture dictionary', icon: 'picdict', w: 380, h: 230, sh: 250, minW: 240, minH: 170,
-  init: () => ({}),
-  blobs: s => [...(s.mine || []).filter(m => m && m.img).map(m => m.img), ...Object.values(s.pick || {}).filter(p => p && p.img).map(p => p.img)],
-  mount(c) {
-    c.body.append(h('div', { class: 'empty' }, h('p', {}, 'English Picture Dictionary by LanGeek: 15,000+ pictures.'),
-      h('a', { class: 'btn pri', href: PD_LANGEEK, target: '_blank', rel: 'noopener' }, svg('ext'), 'Open the Picture dictionary')));
-  },
-};
-
 /* ---------- Brainstorm maps and exit tickets (students can join with the QR code) ---------- */
 const MAP_COLS = ['--lav', '--mint', '--pink', '--aqua', '--butter', '--peach', '--lav', '--mint'];
 const MAP_TPL = [
@@ -6533,13 +6435,13 @@ const DOCK = [
   ['timer', 'Timer'], ['vtimer', 'Visual timer'], ['stopwatch', 'Stopwatch'], ['speech', 'Speech timer'], ['clock', 'Clock'], ['calendar', 'Calendar'], ['countdown', 'Countdown'], ['timetable', 'Timetable'], '|',
   ['sound', 'Sound level'], ['work', 'Work symbols'], ['traffic', 'Traffic light'], '|',
   ['attend', 'Attendance'], ['randomizer', 'Name picker'], ['wheel', 'Spin the wheel'], ['groups', 'Groups'], ['poll', 'Poll'], ['wall', 'Idea wall'], ['mindmap', 'Brainstorm'], ['exit', 'Exit ticket'], ['scoreboard', 'Scoreboard'], '|',
-  ['dict', 'Dictionary'], ['picdict', 'Picture dictionary'], ['family', 'Word family'], ['tongue', 'Tongue twisters'], '|',
+  ['dict', 'Dictionary'], ['family', 'Word family'], ['tongue', 'Tongue twisters'], '|',
   ['hangman', 'Hangman'], ['chess', 'Chess'], ['dice', 'Dice'], ['calc', 'Calculator'], '|',
   ['text', 'Text'], ['note', 'Sticky note'], ['draw', 'Draw'], ['autodraw', 'Auto draw'], ['shapes', 'Shapes'], ['room', 'Class layout'], '|',
   ['image', 'Image'], ['pdf', 'PDF'], ['video', 'Video'], ['webcam', 'Webcam'], ['qr', 'QR code'], ['link', 'Link'], ['embed', 'Website'], '|',
   ['background', 'Background'], ['stickers', 'Stickers'],
 ];
-const DOCK_ACT = { picdict: () => openPicDict(), background: () => openBackground(), stickers: () => openStickers(), shapes: () => openShapes(), note: () => addNote(), autodraw: () => addWidget('draw', { auto: true, _title: 'Auto draw' }) };
+const DOCK_ACT = { background: () => openBackground(), stickers: () => openStickers(), shapes: () => openShapes(), note: () => addNote(), autodraw: () => addWidget('draw', { auto: true, _title: 'Auto draw' }) };
 function buildShell(root) {
   app = h('div', { id: 'app' });
   bgEl = h('div', { id: 'bg', 'aria-hidden': 'true' });
